@@ -506,6 +506,9 @@ impl TranscriptionManager {
     /// is loaded. Never waits for the worker to exit, so it is safe on any
     /// thread, including the event loop.
     pub fn maybe_unload_immediately(&self, context: &str) {
+        if crate::audio_file::model_held() {
+            return;
+        }
         let settings = get_settings(&self.app_handle);
         if settings.model_unload_timeout == ModelUnloadTimeout::Immediately
             && self.is_model_loaded()

@@ -83,6 +83,16 @@ export const AboutSettings: React.FC = () => {
 
       <SettingsGroup title={t("settings.about.acknowledgments.title")}>
         <SettingContainer
+          title={t("settings.about.acknowledgments.handy.title")}
+          description={t("settings.about.acknowledgments.handy.description")}
+          grouped={true}
+          layout="stacked"
+        >
+          <div className="text-sm text-mid-gray">
+            {t("settings.about.acknowledgments.handy.details")}
+          </div>
+        </SettingContainer>
+        <SettingContainer
           title={t("settings.about.acknowledgments.ggml.title")}
           description={t("settings.about.acknowledgments.ggml.description")}
           grouped={true}

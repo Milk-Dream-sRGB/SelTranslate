@@ -393,6 +393,9 @@ impl ShortcutAction for TranscribeAction {
         let tm = app.state::<Arc<TranscriptionManager>>();
         let rm = app.state::<Arc<AudioRecordingManager>>();
 
+        // SelTranslate: dictation comes first, a big translation model leaves the GPU.
+        crate::translate::before_dictation(app);
+
         // Load ASR model and VAD model in parallel
         let kickoff_started = Instant::now();
         tm.initiate_model_load();
@@ -876,6 +879,14 @@ pub static ACTION_MAP: Lazy<HashMap<String, Arc<dyn ShortcutAction>>> = Lazy::ne
     map.insert(
         "test".to_string(),
         Arc::new(TestAction) as Arc<dyn ShortcutAction>,
+    );
+    map.insert(
+        "translate_selection".to_string(),
+        Arc::new(crate::translate::action::TranslateAction) as Arc<dyn ShortcutAction>,
+    );
+    map.insert(
+        "translate_selection_quality".to_string(),
+        Arc::new(crate::translate::action::TranslateQualityAction) as Arc<dyn ShortcutAction>,
     );
     map
 });

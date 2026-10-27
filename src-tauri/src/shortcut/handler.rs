@@ -32,7 +32,18 @@ pub fn handle_shortcut_event(
     hotkey_string: &str,
     is_pressed: bool,
 ) {
+    if crate::hotkeys_pause::is_paused(app) {
+        return;
+    }
     let settings = get_settings(app);
+
+    // A long job (audio file, file translation) must not be disturbed: say so.
+    if is_transcribe_binding(binding_id) && crate::hotkeys_pause::job_running(app) {
+        if is_pressed {
+            crate::translate::action::show_busy(app);
+        }
+        return;
+    }
 
     // Transcribe bindings are handled by the coordinator.
     if is_transcribe_binding(binding_id) {

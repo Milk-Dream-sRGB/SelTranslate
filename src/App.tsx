@@ -214,6 +214,18 @@ function App() {
     };
   }, [t]);
 
+  // SelTranslate: the "translation is not set up" popup opens this section.
+  useEffect(() => {
+    const unlisten = listen<string>("seltranslate-open-section", (event) => {
+      if (event.payload in SECTIONS_CONFIG) {
+        setCurrentSection(event.payload as SidebarSection);
+      }
+    });
+    return () => {
+      unlisten.then((fn) => fn());
+    };
+  }, []);
+
   const revealMainWindowForPermissions = async () => {
     try {
       await commands.showMainWindowCommand();

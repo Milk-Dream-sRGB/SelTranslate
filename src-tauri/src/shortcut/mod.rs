@@ -131,6 +131,9 @@ fn reconcile_cancel_shortcut(app: &AppHandle) {
 
 /// Register a shortcut using the appropriate implementation
 pub fn register_shortcut(app: &AppHandle, binding: ShortcutBinding) -> Result<(), String> {
+    if let Some(paused) = crate::hotkeys_pause::refuse_register(app, &binding) {
+        return paused;
+    }
     let settings = get_settings(app);
     match settings.keyboard_implementation {
         KeyboardImplementation::Tauri => tauri_impl::register_shortcut(app, binding),

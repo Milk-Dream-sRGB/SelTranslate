@@ -1,5 +1,7 @@
 pub mod audio;
+pub mod audio_file;
 pub mod history;
+pub mod library;
 pub mod models;
 pub mod transcription;
 

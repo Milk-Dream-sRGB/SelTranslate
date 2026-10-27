@@ -21,7 +21,8 @@ use tauri::{AppHandle, Emitter, Manager};
 
 mod download;
 
-use download::{HttpDownloadOutcome, DOWNLOAD_STALL_TIMEOUT};
+use download::DOWNLOAD_STALL_TIMEOUT;
+pub(crate) use download::{HttpDownloadEvent, HttpDownloadOutcome};
 
 #[derive(Debug, Clone, Serialize, Deserialize, Type)]
 pub enum EngineType {

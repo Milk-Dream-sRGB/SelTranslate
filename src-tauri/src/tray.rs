@@ -63,6 +63,7 @@ struct MenuInputs {
     downloaded_models: Vec<(String, String)>,
     locale: String,
     update_checks_enabled: bool,
+    hotkeys_paused: bool,
 }
 
 /// Complete description of what the tray should look like.
@@ -334,6 +335,7 @@ fn compute_desired(app: &AppHandle, icon_state: TrayIconState) -> TrayDesired {
             downloaded_models,
             locale: settings.app_language,
             update_checks_enabled: settings.update_checks_enabled,
+            hotkeys_paused: crate::hotkeys_pause::is_manually_paused(app),
         },
     }
 }
@@ -445,9 +447,9 @@ pub fn tray_tooltip() -> String {
 
 fn version_label() -> String {
     if cfg!(debug_assertions) {
-        format!("Handy v{} (Dev)", env!("CARGO_PKG_VERSION"))
+        format!("SelTranslate v{} (Dev)", env!("CARGO_PKG_VERSION"))
     } else {
-        format!("Handy v{}", env!("CARGO_PKG_VERSION"))
+        format!("SelTranslate v{}", env!("CARGO_PKG_VERSION"))
     }
 }
 
@@ -511,6 +513,20 @@ fn build_menu(app: &AppHandle, inputs: &MenuInputs) -> tauri::Result<(Menu<tauri
     )?;
     let quit_i = MenuItem::with_id(app, "quit", &strings.quit, true, quit_accelerator)?;
     let separator = || PredefinedMenuItem::separator(app);
+    // Locales without the translated key get English, like the warning above.
+    let pause_label = if strings.pause_hotkeys.is_empty() {
+        get_tray_translations(Some("en".to_string())).pause_hotkeys
+    } else {
+        strings.pause_hotkeys.clone()
+    };
+    let pause_hotkeys_i = CheckMenuItem::with_id(
+        app,
+        "pause_hotkeys",
+        &pause_label,
+        true,
+        inputs.hotkeys_paused,
+        None::<&str>,
+    )?;
 
     let menu = if inputs.busy {
         let cancel_i = MenuItem::with_id(app, "cancel", &strings.cancel, true, None::<&str>)?;
@@ -520,6 +536,7 @@ fn build_menu(app: &AppHandle, inputs: &MenuInputs) -> tauri::Result<(Menu<tauri
                 &version_i,
                 &separator()?,
                 &cancel_i,
+                &pause_hotkeys_i,
                 &separator()?,
                 &copy_last_transcript_i,
                 &separator()?,
@@ -563,6 +580,7 @@ fn build_menu(app: &AppHandle, inputs: &MenuInputs) -> tauri::Result<(Menu<tauri
                 &separator()?,
                 &model_submenu,
                 &unload_model_i,
+                &pause_hotkeys_i,
                 &separator()?,
                 &settings_i,
                 &check_updates_i,
@@ -694,6 +712,7 @@ mod tests {
             downloaded_models: vec![("small".to_string(), "Small".to_string())],
             locale: "en".to_string(),
             update_checks_enabled: true,
+            hotkeys_paused: false,
         }
     }
 
@@ -740,5 +759,14 @@ mod tests {
     #[test]
     fn idle_and_busy_menus_differ() {
         assert_ne!(inputs(false), inputs(true));
+    }
+
+    #[test]
+    fn pausing_hotkeys_rebuilds_the_menu() {
+        let paused = MenuInputs {
+            hotkeys_paused: true,
+            ..inputs(false)
+        };
+        assert_ne!(inputs(false), paused);
     }
 }

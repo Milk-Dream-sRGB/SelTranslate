@@ -928,6 +928,33 @@ pub fn get_default_settings() -> AppSettings {
             current_binding: "escape".to_string(),
         },
     );
+    // macOS: ctrl+space and ctrl+option+space switch the input source.
+    #[cfg(not(target_os = "macos"))]
+    let (translate_shortcut, translate_quality_shortcut) =
+        ("ctrl+alt+space", "ctrl+alt+shift+space");
+    #[cfg(target_os = "macos")]
+    let (translate_shortcut, translate_quality_shortcut) =
+        ("ctrl+shift+space", "ctrl+option+shift+space");
+    bindings.insert(
+        "translate_selection".to_string(),
+        ShortcutBinding {
+            id: "translate_selection".to_string(),
+            name: "Translate selection".to_string(),
+            description: "Translates the selected text.".to_string(),
+            default_binding: translate_shortcut.to_string(),
+            current_binding: translate_shortcut.to_string(),
+        },
+    );
+    bindings.insert(
+        "translate_selection_quality".to_string(),
+        ShortcutBinding {
+            id: "translate_selection_quality".to_string(),
+            name: "Translate selection with Quality".to_string(),
+            description: "Translates the selected text with the larger model.".to_string(),
+            default_binding: translate_quality_shortcut.to_string(),
+            current_binding: translate_quality_shortcut.to_string(),
+        },
+    );
 
     AppSettings {
         settings_schema_version: default_settings_schema_version(),
@@ -1280,6 +1307,24 @@ pub fn get_recording_retention_period(app: &AppHandle) -> RecordingRetentionPeri
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn translate_hotkeys_default_per_platform() {
+        let settings = get_default_settings();
+        let (plain, quality) = if cfg!(target_os = "macos") {
+            ("ctrl+shift+space", "ctrl+option+shift+space")
+        } else {
+            ("ctrl+alt+space", "ctrl+alt+shift+space")
+        };
+        for (id, want) in [
+            ("translate_selection", plain),
+            ("translate_selection_quality", quality),
+        ] {
+            let binding = get_stored_binding(&settings, id).unwrap();
+            assert_eq!(binding.default_binding, want);
+            assert_eq!(binding.current_binding, want);
+        }
+    }
 
     #[test]
     fn stored_binding_returns_the_requested_binding() {

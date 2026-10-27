@@ -859,6 +859,285 @@ async unloadModelManually() : Promise<Result<null, string>> {
     else return { status: "error", error: e  as any };
 }
 },
+async probeAudioFile(path: string) : Promise<Result<AudioFileInfo, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("probe_audio_file", { path }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+/**
+ * Starts the job in the background and returns at once. `model_id`: a
+ * downloaded model for this file; `None` = the dictation model.
+ */
+async transcribeAudioFile(path: string, modelId: string | null) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("transcribe_audio_file", { path, modelId }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async cancelAudioFileTranscription() : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("cancel_audio_file_transcription") };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+/**
+ * Writes the transcript to a path picked in the Save dialog (the fs plugin
+ * scope only covers app data).
+ */
+async saveAudioFileText(path: string, text: string) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("save_audio_file_text", { path, text }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async libraryGetSettings() : Promise<LibraryInfo> {
+    return await TAURI_INVOKE("library_get_settings");
+},
+/**
+ * `dir`: empty = the default folder. Files are not moved to a new folder.
+ */
+async librarySetSettings(enabled: boolean, dir: string) : Promise<Result<LibraryInfo, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("library_set_settings", { enabled, dir }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async libraryList() : Promise<Result<LibraryEntry[], string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("library_list") };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+/**
+ * Returns the new file name.
+ */
+async libraryRename(fileName: string, newTitle: string) : Promise<Result<string, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("library_rename", { fileName, newTitle }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async libraryDelete(fileName: string) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("library_delete", { fileName }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+/**
+ * Opens the file in its default program (from Rust: the opener's JS scope
+ * would not cover a folder the user picked).
+ */
+async libraryOpen(fileName: string) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("library_open", { fileName }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async libraryReveal(fileName: string) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("library_reveal", { fileName }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async getTranslateSettings() : Promise<SelTranslateSettings> {
+    return await TAURI_INVOKE("get_translate_settings");
+},
+async setTranslateSettings(settings: SelTranslateSettings) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("set_translate_settings", { settings }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async translateServerStart() : Promise<Result<ServerStatus, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("translate_server_start") };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async translateServerStop() : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("translate_server_stop") };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async translateServerStatus() : Promise<ServerStatus> {
+    return await TAURI_INVOKE("translate_server_status");
+},
+async translateListModels() : Promise<ModelEntry[]> {
+    return await TAURI_INVOKE("translate_list_models");
+},
+async translatePromptTemplate(style: PromptStyle) : Promise<string> {
+    return await TAURI_INVOKE("translate_prompt_template", { style });
+},
+async translateFastAvailable() : Promise<boolean> {
+    return await TAURI_INVOKE("translate_fast_available");
+},
+async translatePopupState() : Promise<PopupView | null> {
+    return await TAURI_INVOKE("translate_popup_state");
+},
+async translatePopupClose() : Promise<void> {
+    await TAURI_INVOKE("translate_popup_close");
+},
+async translatePopupCopy() : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("translate_popup_copy") };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async translatePopupReplace() : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("translate_popup_replace") };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async translatePopupAgain() : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("translate_popup_again") };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async translatePopupLanguages() : Promise<LanguageOption[]> {
+    return await TAURI_INVOKE("translate_popup_languages");
+},
+/**
+ * The shown text again with the source language picked in the popup.
+ */
+async translatePopupSetSource(code: string) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("translate_popup_set_source", { code }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async translatePopupImprove() : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("translate_popup_improve") };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async translateFileProbe(path: string) : Promise<Result<FileProbe, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("translate_file_probe", { path }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async translateFileStart(path: string) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("translate_file_start", { path }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async translateFileCancel() : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("translate_file_cancel") };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async translateSetupPlan() : Promise<Result<SetupPlan, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("translate_setup_plan") };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async translateSetupStatus() : Promise<SetupStateView> {
+    return await TAURI_INVOKE("translate_setup_status");
+},
+async translateSetupStart(items: string[], acceptGemmaTerms: boolean) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("translate_setup_start", { items, acceptGemmaTerms }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async translateSetupCancel() : Promise<void> {
+    await TAURI_INVOKE("translate_setup_cancel");
+},
+async translateSetupDiscard() : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("translate_setup_discard") };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async translateSetupUseEngine(flavor: EngineFlavor) : Promise<Result<ErrorKind | null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("translate_setup_use_engine", { flavor }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async translateSetupBusy() : Promise<boolean> {
+    return await TAURI_INVOKE("translate_setup_busy");
+},
+async translateSetupDismissError() : Promise<void> {
+    await TAURI_INVOKE("translate_setup_dismiss_error");
+},
+async translateSetupDeleteUnusedEngine() : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("translate_setup_delete_unused_engine") };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async translateSetupDeleteModels() : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("translate_setup_delete_models") };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async translateOpenSettings() : Promise<void> {
+    await TAURI_INVOKE("translate_open_settings");
+},
 async getHistoryEntries(cursor: number | null, limit: number | null) : Promise<Result<PaginatedHistory, string>> {
     try {
     return { status: "ok", data: await TAURI_INVOKE("get_history_entries", { cursor, limit }) };
@@ -1019,6 +1298,7 @@ vad_backend?: VadBackend;
  */
 overlay_style?: OverlayStyle }
 export type AudioDevice = { index: string; name: string; is_default: boolean }
+export type AudioFileInfo = { duration_secs: number | null; format: string }
 export type AutoSubmitKey = "enter" | "ctrl_enter" | "cmd_enter"
 export type AvailableAccelerators = { transcribe: string[]; ort: string[]; gpu_devices: GpuDeviceOption[] }
 export type BindingResponse = { success: boolean; binding: ShortcutBinding | null; error: string | null }
@@ -1033,6 +1313,24 @@ export type ChineseScript =
 "as_transcribed" | "simplified" | "traditional"
 export type ClipboardHandling = "dont_modify" | "copy_to_clipboard"
 export type CustomSounds = { start: boolean; stop: boolean }
+/**
+ * Which engine a zip belongs to; the CUDA engine needs two zips.
+ */
+export type EngineFlavor = "vulkan" | "cuda" | "metal"
+export type EngineInfo = { current: EngineKind; 
+/**
+ * The engine is not one the setup installed (a path chosen by hand).
+ */
+own_files: boolean; vulkan_downloaded: boolean; cuda_downloaded: boolean; 
+/**
+ * Engines the setup downloaded that `llama_server_path` is not in: what
+ * "Delete the unused engine" removes.
+ */
+unused: EngineFlavor[] }
+/**
+ * Which engine `llama_server_path` is, by the DLL next to it (F.10).
+ */
+export type EngineKind = "vulkan" | "cuda" | "metal" | "cpu" | "missing"
 export type EngineType = 
 /**
  * Any GGML/GGUF model loaded through transcribe-cpp (Whisper, Parakeet,
@@ -1040,6 +1338,16 @@ export type EngineType =
  * the file, so this one variant covers the whole transcribe-cpp family.
  */
 "TranscribeCpp" | "Parakeet" | "Moonshine" | "MoonshineStreaming" | "SenseVoice" | "GigaAM" | "Canary" | "Cohere"
+export type ErrorCode = "no_selection" | "clipboard_busy" | "text_too_long" | "server_failed" | "translation_failed" | "replace_failed" | "job_running" | "not_set_up" | "no_accessibility" | "other"
+/**
+ * What went wrong, for the card's text (DESIGN F.5).
+ */
+export type ErrorKind = "network" | "disk_full" | "hash" | "source_gone" | "host" | "engine_check" | 
+/**
+ * CUDA did not start (old driver): the previous engine stays (F.10).
+ */
+"cuda_failed" | "tar" | "other"
+export type FileProbe = { chars: number; pieces: number; src: string; tgt: string }
 export type GpuDeviceOption = { id: string; name: string; total_vram_mb: number }
 export type HistoryEntry = { id: number; file_name: string; timestamp: number; saved: boolean; title: string; transcription_text: string; post_processed_text: string | null; post_process_prompt: string | null; post_process_requested: boolean }
 export type HistoryUpdatePayload = { action: "added"; entry: HistoryEntry } | { action: "updated"; entry: HistoryEntry } | { action: "deleted"; id: number } | { action: "toggled"; id: number }
@@ -1051,6 +1359,7 @@ export type ImplementationChangeResult = { success: boolean;
  * List of binding IDs that were reset to defaults due to incompatibility
  */
 reset_bindings: string[] }
+export type ItemKind = "engine" | "model"
 export type KeyboardDiagnosticReport = { secure_input_enabled: boolean; culprit_pid: number | null; culprit_name: string | null; 
 /**
  * Counts only — key identity is deliberately never captured.
@@ -1058,7 +1367,18 @@ export type KeyboardDiagnosticReport = { secure_input_enabled: boolean; culprit_
 key_down: number; key_up: number; flags_changed: number; mouse: number; duration_ms: number }
 export type KeyboardImplementation = "tauri" | "handy_keys"
 export type LLMPrompt = { id: string; name: string; prompt: string }
+export type LibraryEntry = { file_name: string; title: string; 
+/**
+ * Local time without a zone, `YYYY-MM-DDTHH:mm:00` (the name's date, or
+ * the file's modification time for a name without one).
+ */
+date: string; size: number }
+/**
+ * The settings plus the folder they resolve to (for the UI).
+ */
+export type LibraryInfo = { enabled: boolean; dir: string; resolved_dir: string }
 export type LogLevel = "trace" | "debug" | "info" | "warn" | "error"
+export type ChatFormat = "translate_gemma" | "chat"
 export type ModelInfo = { id: string; name: string; description: string; filename: string; source: ModelSource; size_mb: number; is_downloaded: boolean; is_downloading: boolean; partial_size: number; is_directory: boolean; engine_type: EngineType; accuracy_score: number; speed_score: number; supports_translation: boolean; is_recommended: boolean; supported_languages: string[]; supports_language_selection: boolean; is_custom: boolean; supports_streaming: boolean; supports_language_detection: boolean }
 export type ModelLoadStatus = { is_loaded: boolean; current_model: string | null }
 /**
@@ -1087,6 +1407,8 @@ sha256: string | null } } |
 "Local"
 export type ModelUnloadTimeout = "never" | "immediately" | "min_2" | "min_5" | "min_10" | "min_15" | "hour_1" | "sec_15"
 export type OrtAcceleratorSetting = "auto" | "cpu" | "cuda" | "directml" | "rocm"
+export type ModelEntry = { path: string; name: string; size_bytes: number; format: ChatFormat }
+export type OutputMode = "popup" | "replace"
 export type OverlayPosition = "top" | "bottom"
 /**
  * Which recording overlay to display. `Minimal` and `Live` share one base
@@ -1098,6 +1420,13 @@ export type OverlayStyle = "none" | "minimal" | "live"
 export type PaginatedHistory = { entries: HistoryEntry[]; has_more: boolean }
 export type PasteMethod = "ctrl_v" | "direct" | "none" | "shift_insert" | "ctrl_shift_v" | "external_script"
 export type PermissionAccess = "allowed" | "denied" | "unknown"
+export type Phase = "downloading" | "verifying" | "extracting" | "checking_engine" | "retrying"
+export type PlanItem = { id: string; kind: ItemKind; size: number; installed: boolean; partial_bytes: number; recommended: boolean; host: string; license: string }
+/**
+ * A source language the popup offers when the detected one was wrong.
+ */
+export type LanguageOption = { code: string; name: string }
+export type PopupView = { kind: "working"; src: string; tgt: string; slot: Slot; model: string; starting_model: boolean; done: number; total: number } | { kind: "done"; src: string; tgt: string; slot: Slot; model: string; text: string; truncated: boolean; clipboard_lost: boolean; can_improve: boolean; improve_failed: boolean; from_cache: boolean } | { kind: "error"; code: ErrorCode; detail: string }
 export type PostProcessProvider = { id: string; label: string; base_url: string; allow_base_url_edit?: boolean; models_endpoint?: string | null; supports_structured_output?: boolean }
 export type RecordingRetentionPeriod = "never" | "preserve_limit" | "days_3" | "weeks_2" | "months_3"
 export type SecretMap = Partial<{ [key in string]: string }>
@@ -1133,6 +1462,29 @@ uncovered_bindings: string[];
  * warning banner appears and explains why recording refused.
  */
 recorder_blocked: boolean }
+export type SelTranslateSettings = { llama_server_path?: string; model_path?: string; fast_model_path?: string; selection_slot?: SelectionSlot; file_slot?: Slot; gpu_layers?: number; ctx_size?: number; idle_unload_minutes?: number; output_mode?: OutputMode; double_ctrl_enabled?: boolean; auto_pause_fullscreen?: boolean; prompt_styles?: Partial<{ [key in string]: PromptChoice }>; recent_models?: string[] }
+/**
+ * The model choice of the hotkey / double Ctrl: a fixed slot, or Auto (G3),
+ * which picks Fast for a short text and Quality for a long one. A separate
+ * type: `Slot` is what the server and the file translation work with.
+ */
+export type PromptChoice = { style?: PromptStyle; custom?: string }
+export type PromptStyle = "standard" | "natural" | "gaming" | "software" | "literal" | "custom"
+export type SelectionSlot = "fast" | "quality" | "auto"
+export type ServerState = "stopped" | "starting" | "running"
+export type ServerStatus = { state: ServerState; port: number | null; base_url: string | null; idle_secs: number | null; last_start_secs: number | null }
+export type SetupPlan = { tier: Tier; adapter_name: string | null; dedicated_mib: number; nvidia: boolean; unified_memory: boolean; items: PlanItem[]; models_volume: string; engine_volume: string; free_models_bytes: number | null; free_engine_bytes: number | null; ready: boolean; has_fast: boolean; has_quality: boolean; engine: EngineInfo; 
+/**
+ * Size of the translation models in the Hugging Face cache that the
+ * settings use ("Delete translation models"); 0: nothing to delete.
+ */
+models_deletable_bytes: number; state: SetupStateView }
+export type SetupProgress = { item: string; phase: Phase; item_done: number; item_total: number; overall_done: number; overall_total: number; bytes_per_sec: number; eta_secs: number | null; retry_in_secs: number | null; 
+/**
+ * Number of the automatic retry (1–3) while `phase` is `retrying`.
+ */
+attempt: number }
+export type SetupStateView = { state: "idle" } | { state: "running"; progress: SetupProgress } | { state: "error"; item: string; kind: ErrorKind; message: string }
 /**
  * How the transcribe shortcut's key events drive a recording.
  */
@@ -1152,6 +1504,10 @@ export type ShortcutActivation =
  */
 "hold_or_toggle"
 export type ShortcutBinding = { id: string; name: string; description: string; default_binding: string; current_binding: string }
+/**
+ * Which model translates: Fast (small, quick) or Quality (the big one). G2.
+ */
+export type Slot = "fast" | "quality"
 export type SoundTheme = "marimba" | "pop" | "custom"
 /**
  * Phase of the streaming overlay card, emitted to drive its UI state.
@@ -1190,6 +1546,7 @@ export type StreamWorkKind = "transcribing" | "polishing"
  * and `Dark` force one of the two palettes Handy already ships.
  */
 export type Theme = "system" | "light" | "dark"
+export type Tier = "both" | "partial" | "small" | "cpu"
 export type TranscribeAcceleratorSetting = "auto" | "cpu" | "gpu"
 export type TypingTool = "auto" | "wtype" | "kwtype" | "dotool" | "ydotool" | "xdotool"
 export type VadBackend = "silero" | "earshot"

@@ -2,6 +2,7 @@ mod actions;
 #[cfg(all(target_os = "macos", target_arch = "aarch64"))]
 mod apple_intelligence;
 mod audio_feedback;
+mod audio_file;
 pub mod audio_toolkit;
 mod autostart;
 mod catalog;
@@ -11,7 +12,9 @@ mod clipboard;
 mod commands;
 pub mod engine_supervisor;
 mod helpers;
+mod hotkeys_pause;
 mod input;
+mod library;
 mod llm_client;
 mod managers;
 mod memory;
@@ -23,6 +26,7 @@ mod settings;
 mod shortcut;
 mod signal_handle;
 mod transcription_coordinator;
+mod translate;
 mod tray;
 mod tray_i18n;
 mod utils;
@@ -301,6 +305,7 @@ fn initialize_core_logic(app_handle: &AppHandle) {
                 tray::copy_last_transcript(app);
             }
             "unload_model" => {
+                translate::stop_server_in_background(app);
                 let transcription_manager = app.state::<Arc<TranscriptionManager>>();
                 if !transcription_manager.is_model_loaded() {
                     log::warn!("No model is currently loaded.");
@@ -308,6 +313,10 @@ fn initialize_core_logic(app_handle: &AppHandle) {
                 }
                 transcription_manager.request_unload();
                 log::info!("Model unloaded via tray.");
+            }
+            "pause_hotkeys" => {
+                let app = app.clone();
+                std::thread::spawn(move || hotkeys_pause::toggle(&app));
             }
             "cancel" => {
                 use crate::utils::cancel_current_operation;
@@ -760,6 +769,47 @@ pub fn run(cli_args: CliArgs) {
             commands::transcription::set_model_unload_timeout,
             commands::transcription::get_model_load_status,
             commands::transcription::unload_model_manually,
+            commands::audio_file::probe_audio_file,
+            commands::audio_file::transcribe_audio_file,
+            commands::audio_file::cancel_audio_file_transcription,
+            commands::audio_file::save_audio_file_text,
+            commands::library::library_get_settings,
+            commands::library::library_set_settings,
+            commands::library::library_list,
+            commands::library::library_rename,
+            commands::library::library_delete,
+            commands::library::library_open,
+            commands::library::library_reveal,
+            translate::get_translate_settings,
+            translate::set_translate_settings,
+            translate::translate_server_start,
+            translate::translate_server_stop,
+            translate::translate_server_status,
+            translate::translate_fast_available,
+            translate::translate_list_models,
+            translate::translate_prompt_template,
+            translate::popup::translate_popup_state,
+            translate::popup::translate_popup_close,
+            translate::popup::translate_popup_copy,
+            translate::popup::translate_popup_replace,
+            translate::popup::translate_popup_improve,
+            translate::popup::translate_popup_again,
+            translate::popup::translate_popup_languages,
+            translate::popup::translate_popup_set_source,
+            translate::file::translate_file_probe,
+            translate::file::translate_file_start,
+            translate::file::translate_file_cancel,
+            translate::setup::translate_setup_plan,
+            translate::setup::translate_setup_status,
+            translate::setup::translate_setup_start,
+            translate::setup::translate_setup_cancel,
+            translate::setup::translate_setup_discard,
+            translate::setup::translate_setup_use_engine,
+            translate::setup::translate_setup_busy,
+            translate::setup::translate_setup_dismiss_error,
+            translate::setup::translate_setup_delete_unused_engine,
+            translate::setup::translate_setup_delete_models,
+            translate::setup::translate_open_settings,
             commands::history::get_history_entries,
             commands::history::toggle_history_entry_saved,
             commands::history::get_audio_file_path,
@@ -890,6 +940,10 @@ pub fn run(cli_args: CliArgs) {
             Some(vec![]),
         ))
         .manage(cli_args.clone())
+        .manage(Arc::new(audio_file::AudioFileJob::default()))
+        .manage(hotkeys_pause::HotkeysPaused::default())
+        .manage(Arc::new(translate::llama_server::LlamaServer::default()))
+        .manage(translate::setup::SetupState::default())
         .setup(move |app| {
             #[cfg(target_os = "windows")]
             log::info!(
@@ -945,7 +999,7 @@ pub fn run(cli_args: CliArgs) {
             // for portable mode (redirects WebView2 cache to portable Data dir)
             let mut win_builder =
                 tauri::WebviewWindowBuilder::new(app, "main", tauri::WebviewUrl::App("/".into()))
-                    .title("Handy")
+                    .title("SelTranslate")
                     .inner_size(680.0, 570.0)
                     .min_inner_size(680.0, 570.0)
                     .resizable(true)
@@ -1011,6 +1065,8 @@ pub fn run(cli_args: CliArgs) {
             app.manage(TranscriptionCoordinator::new(app_handle.clone()));
 
             initialize_core_logic(&app_handle);
+            translate::double_tap::sync(&app_handle);
+            translate::fullscreen::sync(&app_handle);
 
             // Secure Input monitor (macOS): detects stuck secure input that
             // silently blocks keyed shortcuts, warns the user, and activates
@@ -1119,6 +1175,7 @@ pub fn run(cli_args: CliArgs) {
             }
             show_main_window(app);
         }
+        tauri::RunEvent::Exit => translate::on_exit(app),
         // No transcription teardown on exit: transcribe.cpp runs only in the
         // worker process, which exits by itself as soon as this process's end
         // of its stdin closes, even if it is hung. Waiting on an unload here
