@@ -19,7 +19,7 @@ Select text in any app, press the shortcut (or **double Ctrl**), and get the tra
 - **Direction is automatic**: Russian to English, anything else to Russian.
 - **Local model**: [TranslateGemma](https://huggingface.co/google/translategemma-4b-it) in GGUF format, run by a hidden `llama-server` from [llama.cpp](https://github.com/ggml-org/llama.cpp). The server starts on the first translation and stops after a period of inactivity.
 - **Two model slots**: a small *Fast* model (4B) for short phrases and a larger *Quality* model (12B). In *Auto* mode short texts go to Fast and long ones to Quality. A **Better translation** button in the popup repeats a translation with Quality.
-- **Translate file**: translate a whole text file (UTF-8 or UTF-16). The result is saved next to the original as `name.en.txt` or `name.ru.txt`.
+- **Translate file**: translate a whole text file
 - **Pause hotkeys** in the tray menu, and an option to pause them automatically while a full-screen app (a game, a video) is in the foreground.
 
 ### Audio file tab
