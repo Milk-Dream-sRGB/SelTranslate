@@ -1,0 +1,59 @@
+name: "SelTranslate Build"
+
+# Unsigned Windows (NSIS/MSI) and macOS (Apple silicon, ad-hoc) packages of the fork.
+# Run it by hand (Actions, SelTranslate Build, Run workflow) or push a tag
+# `seltranslate-*`: the tag also creates a draft release with the installers.
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "seltranslate-*"
+
+jobs:
+  build:
+    permissions:
+      contents: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: "windows-latest"
+            args: ""
+            target: "x86_64-pc-windows-msvc"
+          - platform: "macos-26"
+            args: "--target aarch64-apple-darwin"
+            target: "aarch64-apple-darwin"
+    uses: ./.github/workflows/build.yml
+    with:
+      platform: ${{ matrix.platform }}
+      target: ${{ matrix.target }}
+      build-args: ${{ matrix.args }}
+      sign-binaries: false
+      asset-prefix: "seltranslate"
+      upload-artifacts: true
+      no-cache: true
+
+  draft-release:
+    if: startsWith(github.ref, 'refs/tags/seltranslate-')
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      actions: read
+    steps:
+      - name: Download the installers of this run
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh run download "${{ github.run_id }}" --repo "${{ github.repository }}" --dir dist
+
+      - name: Create a draft release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          files=$(find dist -type f \( -name '*.exe' -o -name '*.msi' -o -name '*.dmg' \))
+          gh release create "${{ github.ref_name }}" $files \
+            --repo "${{ github.repository }}" \
+            --draft \
+            --title "SelTranslate ${{ github.ref_name }}" \
+            --notes "Unsigned builds. Windows SmartScreen and macOS Gatekeeper will warn on the first launch; see the README."
