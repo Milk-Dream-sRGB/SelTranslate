@@ -512,7 +512,23 @@ jobs:
           chmod +x "$tools_dir/linuxdeploy-${arch}.AppImage"
           "$tools_dir/linuxdeploy-${arch}.AppImage" --appimage-extract-and-run --version
 
+      # SelTranslate: without signing secrets Tauri still tries to import a keychain
+      # certificate when APPLE_CERTIFICATE is set, even to an empty string. The
+      # unsigned step below therefore leaves the signing variables out entirely.
+      - name: Build with Tauri (unsigned)
+        if: ${{ !inputs.sign-binaries }}
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tagName: ${{ inputs.release-id && format('v{0}', steps.get-version.outputs.version) || '' }}
+          releaseName: ${{ inputs.release-id && format('v{0}', steps.get-version.outputs.version) || '' }}
+          releaseId: ${{ inputs.release-id }}
+          assetNamePattern: ${{ steps.patch-release-name.outputs.platform }}
+          args: ${{ inputs.build-args }}
+
       - name: Build with Tauri
+        if: ${{ inputs.sign-binaries }}
         uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
