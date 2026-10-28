@@ -1,0 +1,1137 @@
+{
+  "translatePopup": {
+    "startingModel": "Starting model…",
+    "translating": "Translating {{done}}/{{total}}…",
+    "copy": "Copy",
+    "replace": "Replace",
+    "close": "Close",
+    "cancel": "Cancel",
+    "truncated": "Only the first 20,000 characters were translated.",
+    "clipboardLost": "Your clipboard could not be restored.",
+    "errors": {
+      "no_selection": "No text selected",
+      "clipboard_busy": "The clipboard is busy (another program is holding it). Try again.",
+      "text_too_long": "Text too long for the model. Select less text.",
+      "server_failed": "The translation model did not start. Check the llama-server and model paths in the translation settings.",
+      "translation_failed": "Translation failed.",
+      "replace_failed": "Could not replace the selection.",
+      "job_running": "A long task is running (a file is being transcribed or translated). Wait for it to finish, then try again.",
+      "not_set_up": "Translation is not set up yet. Open the settings to download the engine and a model.",
+      "no_accessibility": "SelTranslate needs the Accessibility permission to copy the selection.",
+      "other": "Could not copy the selection."
+    },
+    "startingBigModel": "Loading the larger model…",
+    "better": "Better translation",
+    "improveFailed": "The new translation did not work, the earlier result is shown.",
+    "targetLanguage": "Target language (pick to translate into another language)",
+    "sourceLanguage": "Source language (pick if it was detected wrongly)",
+    "again": "Translate again",
+    "fromCache": "Same text as before: the earlier translation is shown.",
+    "openSettings": "Open settings",
+    "slotModel": "{{slot}} · {{model}}",
+    "slot": {
+      "fast": "Fast",
+      "quality": "Quality"
+    }
+  },
+  "translateSettings": {
+    "hotkey": {
+      "title": "Translate selection"
+    },
+    "doubleCtrl": {
+      "title": "Double Ctrl",
+      "description": "Press Ctrl twice quickly to translate the selected text, in addition to the hotkey. Works in terminals too; not in windows running as administrator."
+    },
+    "autoPauseFullscreen": {
+      "title": "Pause hotkeys in full screen",
+      "description": "Turns off all Handy hotkeys (dictation, translation, Cancel, Double Ctrl) while a full-screen app such as a game or a video is in the foreground, and back on when you leave it. Games in a borderless window are not detected; use Pause hotkeys in the tray for them.",
+      "descriptionMac": "Turns off all Handy hotkeys (dictation, translation, Cancel, Double Ctrl) while the foreground app covers the whole screen, including any app in full-screen mode (green button), and back on when you leave it. Off by default on Mac."
+    },
+    "target": {
+      "title": "Target language",
+      "description": "Language to translate into. Auto: Russian goes to English, everything else goes to Russian. The language of the text is detected automatically; you can change both languages in the popup."
+    },
+    "output": {
+      "title": "Output mode",
+      "description": "Show the translation in a popup near the cursor, or replace the selected text with it right away.",
+      "popup": "Popup",
+      "replace": "Replace selection"
+    },
+    "model": {
+      "title": "Local model",
+      "description": "Translation runs on a local llama-server with a GGUF model: TranslateGemma or a chat model such as Qwen or Gemma. It starts on the first translation and stops after the idle time below."
+    },
+    "browse": "Browse…",
+    "serverPath": {
+      "title": "llama-server path",
+      "description": "Path to the llama-server executable of llama.cpp (CUDA build on Windows, Metal on macOS).",
+      "filter": "llama-server"
+    },
+    "modelPath": {
+      "title": "Model file (.gguf)",
+      "description": "Path to the TranslateGemma model in GGUF format.",
+      "filter": "GGUF model"
+    },
+    "gpuLayers": {
+      "title": "Where the model runs",
+      "description": "Video card is many times faster and is the right choice if you have a video card with enough memory (the large Quality model needs about 8 GB, the small Fast model about 3 GB). Choose Processor only if you have no suitable video card or want to keep the video memory free (for games, for example); translation will then be much slower. A change takes effect the next time the model starts. If the video card has too little memory for the model, part of it automatically runs on the processor — slower, but it works.",
+      "options": {
+        "gpu": "Video card (fast)",
+        "cpu": "Processor only (slow)",
+        "custom": "Custom: {{n}} layers on the video card",
+        "gpuMac": "Graphics (Metal, fast)"
+      },
+      "descriptionMac": "On a Mac with Apple Silicon the graphics share the memory with the processor, so the graphics are many times faster and are the right choice. The small Fast model takes about 3 GB of the shared memory, the large Quality model about 8 GB. Choose Processor only just to compare; translation will then be much slower. A change takes effect the next time the model starts."
+    },
+    "ctxSize": {
+      "title": "Text length the model can take at once",
+      "description": "Leave Standard, it fits any normal paragraph; long texts are cut into pieces anyway. Compact saves a little video memory, but a very long paragraph may then not fit and will stay untranslated. Extended is for texts with lots of code, tables or rare scripts that take much more room; it needs more video memory. A change takes effect the next time the model starts.",
+      "options": {
+        "compact": "Compact",
+        "standard": "Standard (recommended)",
+        "extended": "Extended",
+        "custom": "Custom: {{n}} tokens"
+      }
+    },
+    "idle": {
+      "title": "Unload after idle (min)",
+      "description": "Stop llama-server and free its memory after this many minutes without translations. 0 keeps it running until Handy exits.",
+      "unit": "min",
+      "never": "Never"
+    },
+    "test": {
+      "title": "Server",
+      "button": "Test",
+      "stop": "Stop"
+    },
+    "status": {
+      "stopped": "Not running",
+      "starting": "Starting…",
+      "running": "Running",
+      "runningOn": "Running on port {{port}}",
+      "startedIn": "started in {{secs}} s"
+    },
+    "file": {
+      "title": "Translate file",
+      "description": "Translate a whole text file (UTF-8 or UTF-16) with the local model. The result is saved next to it as name.en.txt (or name.ru.txt); the original is never changed. While it runs, dictation, the translate hotkey and double Ctrl only ask you to wait, and an audio file cannot be started.",
+      "select": "Select file",
+      "noFile": "No file selected",
+      "filter": "Text files",
+      "info": "{{name}} · {{chars}} characters · {{pieces}} pieces · {{src}} → {{tgt}}",
+      "translate": "Translate",
+      "cancel": "Cancel",
+      "startingModel": "Starting model…",
+      "progress": "{{done}} / {{total}}",
+      "eta": "{{eta}} left",
+      "done": "Done in {{elapsed}}",
+      "cancelled": "Cancelled, nothing saved",
+      "result": "Result",
+      "savedTo": "Saved: {{path}}",
+      "saveFailed": "Could not save next to the file: {{error}}",
+      "untranslated": "Left in the original language (too long for the context): {{count}}. Raise Context size if this matters.",
+      "showInFolder": "Show in folder",
+      "showFailed": "Failed to open the folder: {{error}}",
+      "copy": "Copy",
+      "copied": "Translation copied to the clipboard",
+      "copyFailed": "Failed to copy",
+      "saveAs": "Save as…",
+      "saved": "Saved",
+      "saveAsFailed": "Failed to save: {{error}}",
+      "notText": "The file is not UTF-8 or UTF-16 text (Windows-1251 and other code pages are not supported). Re-save it as UTF-8.",
+      "tooBig": "The file is larger than 10 MB.",
+      "nothing": "There is nothing to translate in this file."
+    },
+    "saveFailed": "Failed to save: {{error}}",
+    "slot": {
+      "fast": "Fast",
+      "quality": "Quality",
+      "auto": "Auto (short text — Fast, long — Quality)",
+      "selectionTitle": "Model for the hotkey",
+      "selectionDescription": "Fast is the small model: instant on short texts and light on video memory. Quality is the large one: slower, more careful. Auto picks Fast for a short text (up to 400 characters and 3 sentences) and Quality for a longer one. Used by the hotkey and double Ctrl; after a Fast result the popup has a Better translation button to redo it with Quality."
+    },
+    "fastModelPath": {
+      "title": "Fast model file (.gguf)",
+      "description": "The small TranslateGemma model (4B). Without this file everything uses the Quality model.",
+      "missing": "The Fast model file was not found, so the Quality model is used for everything. Pick the file or leave this empty."
+    },
+    "models": {
+      "fast": {
+        "title": "Fast model",
+        "description": "The model of the Fast slot: short texts with Auto, the hotkey set to Fast, and the first result before Better translation. Any model may go here; a small one answers fastest."
+      },
+      "quality": {
+        "title": "Quality model",
+        "description": "The model of the Quality slot: long texts with Auto, the Quality hotkey, Better translation and file translation set to Quality. Any model may go here. A model over 10 GB is stopped when dictation starts, so that the speech model has the video memory; the next translation starts it again."
+      },
+      "size": "{{size}} GB · about {{vram}} GB of video memory",
+      "notFound": "{{name}} (file not found)",
+      "browseHint": "Any GGUF model file",
+      "none": "No model",
+      "sizeMac": "{{size}} GB · about {{vram}} GB of memory"
+    },
+    "promptStyle": {
+      "title": "Prompt style",
+      "description": "How this model is asked to translate. The style is kept for each model file separately.",
+      "translateGemmaHint": "TranslateGemma was trained on one fixed prompt and follows styles less than chat models do.",
+      "placeholders": "Placeholders: {source}, {target} (language names such as English), {source_code}, {target_code} (en, ru), {text} (the text to translate, exactly once).",
+      "save": "Save",
+      "reset": "Reset to default",
+      "errors": {
+        "noText": "The prompt must contain {text} — the place of the text to translate.",
+        "twoTexts": "{text} must appear only once.",
+        "tooLong": "The prompt is too long: at most {{max}} characters."
+      },
+      "options": {
+        "standard": {
+          "label": "Standard",
+          "description": "Accurate, neutral. The current behaviour."
+        },
+        "natural": {
+          "label": "Natural",
+          "description": "Sounds like a person wrote it: keeps tone, slang and jokes."
+        },
+        "gaming": {
+          "label": "Gaming",
+          "description": "Natural, and game terms are left as they are."
+        },
+        "software": {
+          "label": "Software",
+          "description": "Natural, and menu items, settings and tool names stay in English."
+        },
+        "literal": {
+          "label": "Literal",
+          "description": "Close to the source, to check the meaning."
+        },
+        "custom": {
+          "label": "Custom",
+          "description": "Your own prompt."
+        }
+      }
+    },
+    "accessibility": {
+      "title": "Permissions",
+      "label": "Accessibility",
+      "description": "macOS lets SelTranslate copy your selection (Cmd+C), paste the translation over it (Cmd+V) and see Double Ctrl only with this permission. Nothing is recorded or sent anywhere. If macOS asks to allow pasting from other apps, choose Allow.",
+      "allowed": "Allowed ✓",
+      "open": "Needed to copy the selection and paste — Open settings"
+    }
+  },
+  "translateSetup": {
+    "title": "Set up translation",
+    "description": "Translation runs on this computer. SelTranslate needs the llama.cpp engine and a TranslateGemma model.",
+    "gpu": {
+      "found": "Video card: {{name}}, {{gb}} GB",
+      "none": "No suitable video card found — translation will run on the processor, slower",
+      "unified": "{{name}} · {{gb}} GB of shared memory"
+    },
+    "items": {
+      "engine-vulkan": {
+        "name": "Engine (Vulkan, any video card)",
+        "what": "llama.cpp b11623"
+      },
+      "engine-cuda": {
+        "name": "Engine (CUDA, NVIDIA only)",
+        "what": "llama.cpp b11623"
+      },
+      "engine-cudart": {
+        "name": "CUDA runtime",
+        "what": "NVIDIA CUDA runtime"
+      },
+      "model-fast": {
+        "name": "Fast model",
+        "what": "TranslateGemma 4B — everyday short texts"
+      },
+      "model-quality": {
+        "name": "Quality model",
+        "what": "TranslateGemma 12B — long texts and files"
+      },
+      "engine-metal": {
+        "name": "Engine (Metal, Apple Silicon)",
+        "what": "llama.cpp b11623"
+      }
+    },
+    "installed": "Installed",
+    "partial": "{{done}} of {{total}} downloaded",
+    "partialNote": "On this video card part of the model runs on the processor — slower.",
+    "slowNote": "On this computer the model will be very slow.",
+    "total": "Total to download: {{size}}",
+    "free": "Free on {{volume}} {{free}}",
+    "notEnoughSpace": "not enough free space",
+    "terms": {
+      "agree": "I agree to the",
+      "termsOfUse": "Gemma Terms of Use",
+      "and": "and the",
+      "prohibitedUse": "Gemma Prohibited Use Policy"
+    },
+    "credits": "Models: TranslateGemma by Google, GGUF by mradermacher on Hugging Face. Nothing is downloaded until you click Download.",
+    "download": "Download",
+    "cancel": "Cancel",
+    "resume": "Resume",
+    "discard": "Discard",
+    "discardConfirm": "The part that is already downloaded will be deleted. Continue?",
+    "retry": "Retry",
+    "haveFiles": "I already have the files",
+    "advanced": "Advanced",
+    "engine": {
+      "title": "Engine",
+      "vulkan": "Vulkan — any video card",
+      "cuda": "CUDA — NVIDIA only",
+      "short": {
+        "vulkan": "Vulkan",
+        "cuda": "CUDA",
+        "metal": "Metal"
+      },
+      "own": "(your own files)",
+      "nvidiaOnly": "CUDA works only with NVIDIA video cards.",
+      "busy": "Not available while a translation is running.",
+      "startFailed": "The engine did not start. The previous engine is kept.",
+      "downloadQuestion": "Download the {{name}} engine, {{size}}?",
+      "ownReplace": "Your own engine files will no longer be used (they stay where they are).",
+      "metal": "Metal — Apple Silicon graphics"
+    },
+    "deleteEngine": "Delete the unused engine",
+    "deleteEngineConfirm": "Delete the engine files that are not in use ({{names}})? You can download them again later.",
+    "deleteModels": "Delete translation models",
+    "deleteModelsConfirm": "Delete the TranslateGemma models from the Hugging Face cache ({{size}})? Translation will need to be set up again.",
+    "delete": "Delete",
+    "dismiss": "OK",
+    "addQuality": "Add the Quality model",
+    "setUpFirst": "Set up translation first",
+    "paused": "Download paused: {{done}} of {{total}}",
+    "progress": "{{done}} of {{total}}",
+    "eta": "about {{eta}} left",
+    "units": {
+      "min": "min",
+      "h": "h"
+    },
+    "phase": {
+      "downloading": "Downloading: {{item}}",
+      "verifying": "Checking the file…",
+      "extracting": "Unpacking the engine…",
+      "checking_engine": "Checking the engine…",
+      "retrying": "Connection lost, retrying in {{secs}} s ({{attempt}} of 3)…"
+    },
+    "errors": {
+      "network": "No connection to {{host}}. Check the internet connection or proxy and click Retry.",
+      "disk_full": "Not enough free disk space ({{detail}}).",
+      "hash": "The downloaded file is damaged and was deleted. Click Retry to download it again.",
+      "source_gone": "The file is no longer available at the source ({{detail}}). Update SelTranslate or use I already have the files.",
+      "host": "The download was redirected to an unexpected site ({{detail}}) and stopped.",
+      "engine_check": "The engine did not start: {{detail}} An antivirus may have blocked it.",
+      "cuda_failed": "CUDA did not start on this computer (the video card driver may be too old). The previous engine is kept.",
+      "tar": "Windows could not unpack the engine (tar.exe): {{detail}}",
+      "other": "Something went wrong: {{detail}}",
+      "tar_mac": "macOS could not unpack the engine: {{detail}}"
+    },
+    "ready": {
+      "line": "Translation is set up: {{models}}, {{engine}}.",
+      "own": "Translation is set up (your own files).",
+      "models": {
+        "both": "Fast and Quality models",
+        "fast": "Fast model only",
+        "quality": "Quality model only"
+      },
+      "engine": {
+        "vulkan": "Vulkan engine",
+        "cuda": "CUDA engine",
+        "cpu": "CPU engine",
+        "missing": "no engine",
+        "metal": "Metal engine"
+      }
+    },
+    "notices": {
+      "noGpu": "The engine does not see your video card (its driver has no Vulkan support). Translation will run on the processor; the Quality model was skipped because it would be very slow there. You can add it later.",
+      "cudaFailed": "CUDA did not start on this computer (the video card driver may be too old), so the Vulkan engine was installed instead.",
+      "skipped": "The Quality model was skipped. You can add it later."
+    },
+    "partialNoteUnified": "Uses about 8 GB of the shared memory; other apps may slow down. Fast stays the default for the hotkey; Quality is used by Better translation.",
+    "freeUnified": "Free: {{free}}"
+  },
+  "audioFile": {
+    "title": "Audio file",
+    "description": "Transcribe a recording (mp3, m4a, flac, ogg, wav) or the audio track of a video (mp4, mov) with the model chosen below.",
+    "modelLabel": "Model",
+    "sameAsDictation": "Same as dictation ({{model}})",
+    "modelHint": "Downloaded models only; get more in the Models tab. Dictation goes back to its own model after the job.",
+    "hotkeysOff": "While a file is being transcribed, dictation and translation hotkeys only ask you to wait.",
+    "noModel": "No model selected — choose one in the Models tab.",
+    "selectFile": "Select file",
+    "noFile": "No file selected",
+    "unknownDuration": "unknown length",
+    "audioFilter": "Audio and video",
+    "noAudioTrack": "No supported audio track. Extract audio with ffmpeg first.",
+    "transcribe": "Transcribe",
+    "cancel": "Cancel",
+    "loadingModel": "Loading model…",
+    "eta": "~{{eta}} left",
+    "done": "Done: {{audio}} of audio in {{elapsed}}",
+    "cancelled": "Cancelled",
+    "result": "Result",
+    "copy": "Copy",
+    "copied": "Copied to clipboard",
+    "copyFailed": "Failed to copy",
+    "saveTxt": "Save as .txt",
+    "textFilter": "Text",
+    "saved": "Saved",
+    "saveFailed": "Failed to save: {{error}}",
+    "library": {
+      "title": "Library",
+      "enable": "Library",
+      "enableDescription": "Save every finished transcript as a .md file in the folder below.",
+      "change": "Change…",
+      "useDefault": "Use default",
+      "changeHint": "Existing files stay in the old folder.",
+      "empty": "No transcripts yet.",
+      "savedTo": "Saved to library: {{title}}",
+      "saveFailed": "Not saved to the library: {{error}}. The text is still here — use Save as .txt.",
+      "rename": "Rename",
+      "showInFolder": "Show in folder",
+      "delete": "Delete",
+      "deleteTitle": "Delete transcript",
+      "deleteConfirm": "Delete \"{{title}}\"? The file is removed for good.",
+      "failed": "Library: {{error}}"
+    }
+  },
+  "tray": {
+    "settings": "Settings...",
+    "checkUpdates": "Check for Updates...",
+    "copyLastTranscript": "Copy Last Transcript",
+    "unloadModel": "Unload Model",
+    "model": "Model",
+    "quit": "Quit",
+    "cancel": "Cancel",
+    "pauseHotkeys": "Pause hotkeys",
+    "secureInputWarning": "⚠ Shortcuts blocked by Secure Input"
+  },
+  "sidebar": {
+    "audioFile": "Audio file",
+    "translate": "Translate",
+    "general": "General",
+    "models": "Models",
+    "advanced": "Advanced",
+    "postProcessing": "Post Process",
+    "history": "History",
+    "debug": "Debug",
+    "about": "About"
+  },
+  "onboarding": {
+    "subtitle": "To get started, choose a transcription model",
+    "existingModelsTitle": "Compatible Models",
+    "downloadModelsTitle": "Available to Download",
+    "showAllModels": "Show all {{total}} models",
+    "showFewerModels": "Show fewer models",
+    "recommended": "Recommended",
+    "customModelDescription": "Not officially supported",
+    "modelCard": {
+      "accuracy": "accuracy",
+      "speed": "speed"
+    },
+    "models": {
+      "small": {
+        "name": "Whisper Small",
+        "description": "Fast and fairly accurate."
+      },
+      "medium": {
+        "name": "Whisper Medium",
+        "description": "Good accuracy, medium speed"
+      },
+      "turbo": {
+        "name": "Whisper Turbo",
+        "description": "Balanced accuracy and speed."
+      },
+      "large": {
+        "name": "Whisper Large",
+        "description": "Good accuracy, but slow."
+      },
+      "parakeet-tdt-0.6b-v2": {
+        "name": "Parakeet V2",
+        "description": "English only. The best model for English speakers."
+      },
+      "parakeet-tdt-0.6b-v3": {
+        "name": "Parakeet V3",
+        "description": "Fast and accurate"
+      },
+      "moonshine-base": {
+        "name": "Moonshine Base",
+        "description": "Very fast, English only. Handles accents well."
+      },
+      "moonshine-tiny-streaming-en": {
+        "name": "Moonshine V2 Tiny",
+        "description": "Ultra-fast, English only"
+      },
+      "moonshine-small-streaming-en": {
+        "name": "Moonshine V2 Small",
+        "description": "Fast, English only. Good balance of speed and accuracy."
+      },
+      "moonshine-medium-streaming-en": {
+        "name": "Moonshine V2 Medium",
+        "description": "English only. High quality."
+      },
+      "breeze-asr": {
+        "name": "Breeze ASR",
+        "description": "Optimized for Taiwanese Mandarin. Code-switching support."
+      },
+      "sense-voice-int8": {
+        "name": "SenseVoice",
+        "description": "Very fast. Chinese, English, Japanese, Korean, Cantonese."
+      },
+      "gigaam-v3-e2e-ctc": {
+        "name": "GigaAM v3",
+        "description": "Russian speech recognition. Fast and accurate."
+      },
+      "canary-180m-flash": {
+        "name": "Canary 180M Flash",
+        "description": "Very fast. English, German, Spanish, French. Supports translation."
+      },
+      "canary-1b-v2": {
+        "name": "Canary 1B v2",
+        "description": "Accurate multilingual. 25 European languages. Supports translation."
+      },
+      "cohere-int8": {
+        "name": "Cohere",
+        "description": "A large, slower, but very accurate multilingual model."
+      }
+    },
+    "errors": {
+      "selectModel": "Failed to select model"
+    },
+    "permissions": {
+      "title": "Permissions Required",
+      "description": "Handy needs a couple of permissions to work properly.",
+      "microphone": {
+        "title": "Microphone Access",
+        "description": "Required to hear your voice for transcription."
+      },
+      "accessibility": {
+        "title": "Accessibility Access",
+        "description": "Required to type transcribed text into your applications."
+      },
+      "grant": "Grant Permission",
+      "granted": "Granted",
+      "waiting": "Waiting...",
+      "allGranted": "All set!",
+      "errors": {
+        "checkFailed": "Failed to check permissions. Please try again.",
+        "requestFailed": "Failed to request permission. Please try again."
+      }
+    }
+  },
+  "modelSelector": {
+    "custom": "Custom",
+    "legacy": "Legacy",
+    "streaming": "Streaming",
+    "active": "Active",
+    "switching": "Switching...",
+    "noModelsAvailable": "No models available",
+    "verifying": "Verifying {{modelName}}...",
+    "verifyingGeneric": "Verifying...",
+    "extracting": "Extracting {{modelName}}...",
+    "extractingMultiple": "Extracting {{count}} models...",
+    "extractingGeneric": "Extracting...",
+    "downloading": "Downloading {{percentage}}%",
+    "downloadingMultiple": "Downloading {{count}} models...",
+    "modelReady": "Model Ready",
+    "loading": "Loading {{modelName}}...",
+    "loadingGeneric": "Loading...",
+    "modelError": "Model Error",
+    "modelUnloaded": "Model Unloaded",
+    "noModelDownloadRequired": "No Model - Download Required",
+    "deleteModel": "Delete {{modelName}}",
+    "downloadSpeed": "{{speed}} MB/s",
+    "cancel": "Cancel",
+    "cancelDownload": "Cancel download",
+    "capabilities": {
+      "languageSelection": "Supports multiple input languages",
+      "singleLanguage": "Supports this language only",
+      "languageCount": "{{total}} languages",
+      "languageOnly": "{{language}} only",
+      "translation": "Can translate to English",
+      "translate": "Translate",
+      "streaming": "Shows live transcription as you speak"
+    }
+  },
+  "settings": {
+    "modelSettings": {
+      "title": "{{model}} Settings"
+    },
+    "general": {
+      "title": "General",
+      "shortcut": {
+        "title": "Handy Shortcuts",
+        "description": "Configure keyboard shortcuts to trigger speech-to-text recording",
+        "loading": "Loading shortcuts...",
+        "none": "No shortcuts configured",
+        "notFound": "Shortcut not found",
+        "pressKeys": "Press keys...",
+        "bindings": {
+          "transcribe": {
+            "name": "Transcribe Shortcut",
+            "description": "The keyboard shortcut to record and transcribe your voice."
+          },
+          "cancel": {
+            "name": "Cancel Shortcut",
+            "description": "The keyboard shortcut to cancel the current recording."
+          },
+          "transcribe_with_post_process": {
+            "name": "Post-Processing Hotkey",
+            "description": "Optional: A dedicated hotkey that always applies AI post-processing to your transcription."
+          },
+          "translate_selection": {
+            "name": "Translate selection",
+            "description": "Translate the selected text: Russian to English, anything else to Russian."
+          },
+          "translate_selection_quality": {
+            "name": "Translate selection with Quality",
+            "description": "The same, but always with the large Quality model: for a big paragraph."
+          }
+        },
+        "errors": {
+          "restore": "Failed to restore original shortcut",
+          "set": "Failed to set shortcut: {{error}}",
+          "reset": "Failed to reset shortcut to original value"
+        }
+      },
+      "language": {
+        "title": "Language",
+        "description": "Select the language for speech recognition. Auto will automatically determine the language, while selecting a specific language can improve accuracy for that language.",
+        "searchPlaceholder": "Search languages...",
+        "noResults": "No languages found",
+        "auto": "Auto"
+      },
+      "shortcutActivation": {
+        "title": "Shortcut Behavior",
+        "description": "Choose how the transcribe shortcut starts and stops recording.",
+        "options": {
+          "holdOrToggle": "Auto",
+          "pushToTalk": "Hold",
+          "toggle": "Toggle"
+        },
+        "descriptions": {
+          "hold_or_toggle": "Hold to record or tap to toggle",
+          "push_to_talk": "Records while you hold the shortcut",
+          "toggle": "Tap the shortcut to start recording, tap again to stop"
+        }
+      }
+    },
+    "models": {
+      "title": "Transcription Models",
+      "description": "Select a transcription model or download additional models. Different models offer varying levels of accuracy and speed.",
+      "searchPlaceholder": "Search models by name…",
+      "yourModels": "Downloaded Models",
+      "availableModels": "Available to Download",
+      "deleteConfirm": "Are you sure you want to delete {{modelName}}? You will need to download it again to use it.",
+      "deleteActiveConfirm": "{{modelName}} is your active model. Deleting it will stop transcriptions until you select a new model. Are you sure?",
+      "deleteTitle": "Delete Model",
+      "filters": {
+        "allLanguages": "All Languages",
+        "streaming": "Filter models that support live streaming transcription",
+        "translation": "Filter models that support translation to English"
+      },
+      "rescan": {
+        "label": "Rescan",
+        "tooltip": "Rescan for models added to the models folder or Hugging Face cache outside Handy"
+      },
+      "noModelsMatch": "No models match this filter."
+    },
+    "sound": {
+      "title": "Sound",
+      "microphone": {
+        "title": "Microphone",
+        "description": "Select your preferred microphone device",
+        "placeholder": "Select microphone...",
+        "loading": "Loading..."
+      },
+      "channel": {
+        "title": "Input Channel",
+        "description": "Select which input channel to record from. Use this if your audio interface has multiple inputs.",
+        "average": "Average all channels",
+        "channel": "Channel {{n}}"
+      },
+      "audioFeedback": {
+        "label": "Audio Feedback",
+        "description": "Play sound when recording starts and stops"
+      },
+      "outputDevice": {
+        "title": "Output Device",
+        "description": "Select your preferred audio output device for feedback sounds",
+        "placeholder": "Select output device...",
+        "loading": "Loading..."
+      },
+      "volume": {
+        "title": "Volume",
+        "description": "Adjust the volume of audio feedback sounds"
+      }
+    },
+    "advanced": {
+      "groups": {
+        "app": "App",
+        "output": "Output",
+        "transcription": "Transcription",
+        "history": "History",
+        "experimental": "Experimental"
+      },
+      "experimentalToggle": {
+        "label": "Experimental Features",
+        "description": "Enable experimental features that are still in development."
+      },
+      "lazyStreamClose": {
+        "label": "Keep Mic Open Between Transcriptions",
+        "description": "Keeps the microphone stream open for 30 seconds after recording stops, reducing latency for back-to-back transcriptions. May degrade Bluetooth audio quality while active."
+      },
+      "acceleration": {
+        "transcribe": {
+          "title": "transcribe.cpp Acceleration",
+          "description": "Hardware acceleration for transcribe.cpp (Whisper-family) models. Auto uses GPU if available (Metal on macOS, Vulkan on Windows/Linux)."
+        },
+        "ort": {
+          "title": "ONNX Acceleration",
+          "description": "Hardware acceleration for ONNX models (Parakeet, Canary, Moonshine, etc.). DirectML on Windows is experimental. Models may fail to transcribe."
+        },
+        "gpuDevice": {
+          "auto": "Auto"
+        }
+      },
+      "startHidden": {
+        "label": "Start Hidden",
+        "description": "Launch to system tray without opening the window."
+      },
+      "autostart": {
+        "label": "Launch on Startup",
+        "description": "Automatically start Handy when you log in to your computer."
+      },
+      "showTrayIcon": {
+        "label": "Show Tray Icon",
+        "description": "Display the Handy icon in the system tray."
+      },
+      "overlay": {
+        "style": {
+          "title": "Overlay",
+          "description": "Choose the recording overlay: None hides it, Minimal shows a compact pill, Live shows transcription in real time as you speak (streaming-capable models only — look for the Streaming badge in the model picker). On Linux 'None' is recommended.",
+          "options": {
+            "none": "None",
+            "minimal": "Minimal",
+            "live": "Live"
+          }
+        },
+        "position": {
+          "title": "Overlay Position",
+          "description": "Where the overlay appears on screen during recording and transcription.",
+          "options": {
+            "bottom": "Bottom",
+            "top": "Top"
+          }
+        }
+      },
+      "pasteMethod": {
+        "title": "Paste Method",
+        "description": "Choose how text is inserted. Direct: simulates typing via system input. None: skips paste, only updates history/clipboard.",
+        "options": {
+          "clipboard": "Clipboard ({{modifier}}+V)",
+          "clipboardCtrlShiftV": "Clipboard (Ctrl+Shift+V)",
+          "clipboardShiftInsert": "Clipboard (Shift+Insert)",
+          "direct": "Direct",
+          "none": "None",
+          "externalScript": "External Script"
+        },
+        "externalScriptPlaceholder": "/path/to/your/script.sh"
+      },
+      "typingTool": {
+        "title": "Typing Tool",
+        "description": "Choose which Linux typing tool to use for Direct paste method. Auto will automatically detect and use the best available tool for your system.",
+        "options": {
+          "auto": "Auto (Recommended)"
+        }
+      },
+      "clipboardHandling": {
+        "title": "Clipboard Handling",
+        "description": "Don't Modify Clipboard preserves your current clipboard contents after transcription. Copy to Clipboard leaves the transcription result in your clipboard after pasting.",
+        "options": {
+          "dontModify": "Don't Modify Clipboard",
+          "copyToClipboard": "Copy to Clipboard"
+        }
+      },
+      "autoSubmit": {
+        "title": "Auto Submit",
+        "description": "Automatically send the selected key combination after text insertion. Cmd+Enter applies on macOS, while Windows/Linux use Super+Enter.",
+        "options": {
+          "off": "Off",
+          "enter": "Enter",
+          "cmdEnter": "Cmd+Enter",
+          "superEnter": "Super+Enter",
+          "ctrlEnter": "Ctrl+Enter"
+        }
+      },
+      "translateToEnglish": {
+        "label": "Translate to English",
+        "description": "Automatically translate speech from other languages to English during transcription."
+      },
+      "modelUnload": {
+        "title": "Unload Model",
+        "description": "Automatically free GPU/CPU memory when the model hasn't been used for the specified time",
+        "options": {
+          "never": "Never",
+          "immediately": "Immediately",
+          "min2": "After 2 minutes",
+          "min5": "After 5 minutes",
+          "min10": "After 10 minutes",
+          "min15": "After 15 minutes",
+          "hour1": "After 1 hour",
+          "sec15": "After 15 seconds (Debug)"
+        }
+      },
+      "customWords": {
+        "title": "Custom Words",
+        "description": "Help supported models recognize names and specialized terms. Fuzzy correction is currently limited to words using A–Z and numbers.",
+        "placeholder": "Add a word",
+        "add": "Add",
+        "remove": "Remove {{word}}",
+        "duplicate": "\"{{word}}\" already exists"
+      },
+      "voiceActivityDetection": {
+        "title": "Voice Activity Detection",
+        "description": "Filter silence from recordings. Streaming-capable models use a longer VAD tail; disabling VAD records raw audio."
+      },
+      "vadBackend": {
+        "title": "Voice Activity Backend",
+        "description": "Choose the detector used to filter silence. Earshot is experimental; switch back to Silero if speech is clipped or noise is retained.",
+        "options": {
+          "silero": "Silero",
+          "earshot": "Earshot"
+        }
+      },
+      "fillerWordRemoval": {
+        "title": "Remove Filler Words",
+        "description": "Removes common hesitation words from transcriptions. Turn off to keep them."
+      },
+      "chineseScript": {
+        "title": "Chinese Script",
+        "description": "Writes Mandarin and Cantonese transcriptions in Simplified or Traditional characters. Other languages are left unchanged.",
+        "options": {
+          "asTranscribed": "As Transcribed",
+          "simplified": "Simplified",
+          "traditional": "Traditional"
+        }
+      }
+    },
+    "postProcessing": {
+      "hotkey": {
+        "title": "Hotkey"
+      },
+      "api": {
+        "title": "API (OpenAI Compatible)",
+        "provider": {
+          "title": "Provider",
+          "description": "Select an OpenAI-compatible provider."
+        },
+        "appleIntelligence": {
+          "unavailable": "Apple Intelligence is not available on this device. Requires an Apple Silicon Mac running macOS Tahoe (26.0) or later with Apple Intelligence enabled in System Settings."
+        },
+        "baseUrl": {
+          "title": "Base URL",
+          "description": "API base URL for the selected provider. Only the custom provider can be edited.",
+          "placeholder": "https://api.openai.com/v1"
+        },
+        "apiKey": {
+          "title": "API Key",
+          "description": "API key for the selected provider.",
+          "placeholder": "sk-..."
+        },
+        "model": {
+          "title": "Model",
+          "descriptionCustom": "Provide the model identifier expected by your custom endpoint.",
+          "descriptionDefault": "Choose a model exposed by the selected provider.",
+          "placeholderWithOptions": "Search or select a model",
+          "placeholderNoOptions": "Type a model name",
+          "refreshModels": "Refresh models"
+        }
+      },
+      "prompts": {
+        "title": "Prompt",
+        "selectedPrompt": {
+          "title": "Selected Prompt",
+          "description": "Select a template for refining transcriptions or create a new one. Use ${output} inside the prompt text to reference the captured transcript."
+        },
+        "noPrompts": "No prompts available",
+        "selectPrompt": "Select a prompt",
+        "createNew": "Create New Prompt",
+        "promptLabel": "Prompt Label",
+        "promptLabelPlaceholder": "Enter prompt name",
+        "promptInstructions": "Prompt Instructions",
+        "promptInstructionsPlaceholder": "Write the instructions to run after transcription. Example: Improve grammar and clarity for the following text: ${output}",
+        "promptTip": "Tip: Use <code>${output}</code> to insert the transcribed text in your prompt.",
+        "updatePrompt": "Update Prompt",
+        "deletePrompt": "Delete Prompt",
+        "createPrompt": "Create Prompt",
+        "cancel": "Cancel",
+        "selectToEdit": "Select a prompt above to view and edit its details.",
+        "createFirst": "Click 'Create New Prompt' above to create your first post-processing prompt."
+      }
+    },
+    "history": {
+      "title": "History",
+      "openFolder": "Open Recordings Folder",
+      "loading": "Loading history...",
+      "empty": "No transcriptions yet. Start recording to build your history!",
+      "copyToClipboard": "Copy transcription to clipboard",
+      "copyError": "Failed to copy transcription to clipboard.",
+      "save": "Save transcription",
+      "unsave": "Remove from saved",
+      "delete": "Delete entry",
+      "deleteError": "Failed to delete entry. Please try again.",
+      "retranscribe": "Re-transcribe",
+      "retranscribeError": "Failed to re-transcribe. Please try again.",
+      "transcribing": "Transcribing...",
+      "transcriptionFailed": "Transcription failed. You can re-transcribe using the retry icon."
+    },
+    "debug": {
+      "title": "Debug",
+      "logDirectory": {
+        "title": "Log Directory",
+        "description": "Location where log files are stored"
+      },
+      "logLevel": {
+        "title": "Log Level",
+        "description": "Set the verbosity of logging"
+      },
+      "liveLogs": {
+        "title": "Live Logs",
+        "description": "Stream application logs in real time to diagnose issues without opening the log file. Only logs emitted while this panel is open are shown; respects the Log Level setting above.",
+        "live": "Live",
+        "paused": "Paused",
+        "pause": "Pause",
+        "resume": "Resume",
+        "copied": "Copied",
+        "lineCount": "{{count}} lines",
+        "empty": "Waiting for logs… Entries appear here as the app emits them."
+      },
+      "updateChecks": {
+        "label": "Check for Updates",
+        "description": "Automatically check for new versions of Handy",
+        "lockedDescription": "Disabled by system configuration (HANDY_DISABLE_UPDATER)"
+      },
+      "whatsNewPreview": {
+        "title": "Preview What's New",
+        "description": "Open the latest bundled release note without marking it as seen",
+        "button": "Preview",
+        "noNotes": "No bundled release notes found",
+        "error": "Failed to preview release notes"
+      },
+      "onboardingPreview": {
+        "title": "Preview Onboarding",
+        "description": "Preview onboarding screens without changing permissions, models, or completion state",
+        "permissionsButton": "Permissions",
+        "modelsButton": "Model Selection",
+        "exitButton": "Exit Preview"
+      },
+      "soundTheme": {
+        "label": "Sound Theme",
+        "description": "Choose a sound theme for recording start and stop feedback"
+      },
+      "wordCorrectionThreshold": {
+        "title": "Word Correction Threshold",
+        "description": "Sensitivity for custom word corrections"
+      },
+      "historyLimit": {
+        "title": "History Limit",
+        "description": "Maximum number of history entries to keep",
+        "entries": "entries"
+      },
+      "recordingRetention": {
+        "title": "Auto-Delete Recordings",
+        "description": "Automatically delete old recordings to save space",
+        "never": "Never",
+        "preserveLimit": "Keep latest {{count}}",
+        "days3": "After 3 days",
+        "weeks2": "After 2 weeks",
+        "months3": "After 3 months",
+        "placeholder": "Select retention period..."
+      },
+      "alwaysOnMicrophone": {
+        "label": "Always-On Microphone",
+        "description": "Keep microphone active for faster response"
+      },
+      "clamshellMicrophone": {
+        "title": "Clamshell Microphone",
+        "description": "Microphone to use when laptop lid is closed"
+      },
+      "postProcessingToggle": {
+        "label": "Post Processing",
+        "description": "Enable AI-powered text refinement after transcription"
+      },
+      "muteWhileRecording": {
+        "label": "Mute While Recording",
+        "description": "Mute system audio during recording"
+      },
+      "appendTrailingSpace": {
+        "label": "Append Trailing Space",
+        "description": "Add a space after pasted transcription"
+      },
+      "keyboardImplementation": {
+        "title": "Keyboard Implementation",
+        "description": "Choose the keyboard shortcut backend.",
+        "bindingsReset": "Keyboard shortcuts were incompatible and reset to defaults"
+      },
+      "paths": {
+        "appData": "App Data:",
+        "models": "Models:",
+        "settings": "Settings:"
+      },
+      "pasteDelay": {
+        "title": "Paste Delay (Before)",
+        "description": "Delay (in milliseconds) after copying text, before sending the paste keystroke. Increase if nothing gets pasted."
+      },
+      "pasteDelayAfter": {
+        "title": "Paste Delay (After)",
+        "description": "Delay (in milliseconds) after the paste keystroke, before restoring your previous clipboard. Increase if your old clipboard content is being pasted instead of the transcription."
+      },
+      "holdThreshold": {
+        "title": "Hold Threshold",
+        "description": "Auto mode only: how long (in milliseconds) the shortcut must be held before it counts as a hold instead of a tap. Lower if short holds keep leaving recording on; raise if deliberate taps get treated as holds."
+      },
+      "reliablePaste": {
+        "title": "Reliable Paste (Beta)",
+        "description": "Restore the clipboard only after the target app actually reads the transcription, instead of after a fixed delay. Intended to fix old clipboard content being pasted under system load. Requires a clipboard paste method; macOS and Windows only."
+      },
+      "recordingBuffer": {
+        "title": "Extra Recording Buffer",
+        "description": "Extra time (in milliseconds) to keep recording after you release the key, to capture trailing audio. 0 = no extra buffer."
+      },
+      "keyboardDiagnostic": {
+        "title": "Keyboard Diagnostic",
+        "description": "Checks whether keyboard events reach Handy. Only event counts are recorded — never which keys you press.",
+        "run": "Run 10s diagnostic",
+        "running": "Listening… press your shortcut a few times (e.g. Option+Space)",
+        "secureInputLabel": "Secure Input",
+        "enabled": "enabled",
+        "disabled": "disabled",
+        "holder": "held by {{name}} (pid {{pid}})",
+        "holderUnknown": "no visible holder",
+        "keyDown": "Key down",
+        "keyUp": "Key up",
+        "flagsChanged": "Modifiers",
+        "mouse": "Mouse",
+        "verdictBlocked": "Secure Input is blocking key events — keyed shortcuts cannot work until it is resolved.",
+        "verdictSuspicious": "Modifier events arrived but no key events — something is suppressing keys even though Secure Input reports disabled. Please report this on GitHub.",
+        "verdictOk": "Key events are reaching Handy normally.",
+        "verdictNoEvents": "No events captured — did you press any keys during the test?",
+        "failed": "Diagnostic failed: {{error}}"
+      }
+    },
+    "about": {
+      "title": "About",
+      "version": {
+        "title": "Version",
+        "description": "Current version of Handy"
+      },
+      "whatsNewUpdates": {
+        "label": "Show What's New",
+        "description": "Show release notes after Handy updates"
+      },
+      "appDataDirectory": {
+        "title": "App Data Directory",
+        "description": "Location where Handy stores its data"
+      },
+      "sourceCode": {
+        "title": "Source Code",
+        "description": "View source code and contribute",
+        "button": "View on GitHub"
+      },
+      "supportDevelopment": {
+        "title": "Support Development",
+        "description": "Help us continue building Handy",
+        "button": "Donate"
+      },
+      "acknowledgments": {
+        "title": "Acknowledgments",
+        "handy": {
+          "title": "Handy",
+          "description": "SelTranslate is a fork of Handy by CJ Pais, released under the MIT license",
+          "details": "Dictation, models, settings and the overlay come from Handy; this fork adds the Audio file tab and selection translation. Please support the original author with the Support development button above."
+        },
+        "ggml": {
+          "title": "ggml",
+          "description": "High-performance tensor library for on-device machine learning inference",
+          "details": "Handy's local speech-to-text is built on transcribe.cpp and ggml. Thanks to the amazing work by Georgi Gerganov and contributors."
+        }
+      }
+    }
+  },
+  "footer": {
+    "checkingUpdates": "Checking for updates...",
+    "updateAvailableShort": "Update available",
+    "upToDate": "Up to date",
+    "updateCheckingDisabled": "Update Checking Disabled",
+    "downloading": "Downloading... {{progress}}%",
+    "installing": "Installing...",
+    "preparing": "Preparing...",
+    "checkForUpdates": "Check for updates",
+    "portableUpdateTitle": "Manual update required",
+    "portableUpdateMessage": "Portable installs cannot be updated automatically. Download the installer for your system below, run it, and install to the same folder — your Data/ folder (settings, models, recordings) is kept in place.",
+    "portableUpdateButton": "Download installer",
+    "portableUpdateBrowseMessage": "Portable installs cannot be updated automatically. Download the latest version for your system from GitHub Releases and install it to the same folder — your Data/ folder (settings, models, recordings) is kept in place.",
+    "portableUpdateBrowseButton": "Open GitHub Releases"
+  },
+  "whatsNew": {
+    "title": "New in Handy v{{version}}"
+  },
+  "common": {
+    "loading": "Loading...",
+    "delete": "Delete",
+    "close": "Close",
+    "open": "Open",
+    "copy": "Copy",
+    "clear": "Clear",
+    "noOptionsFound": "No options found"
+  },
+  "accessibility": {
+    "permissionsDescription": "Handy needs accessibility permissions to type transcribed text.",
+    "openSettings": "Open System Settings"
+  },
+  "errors": {
+    "loadDirectory": "Error loading directory: {{error}}",
+    "micPermissionDeniedTitle": "Microphone Access Denied",
+    "micPermissionDenied": {
+      "generic": "Microphone access was denied by the operating system. Please grant microphone permission in your system settings.",
+      "windows": "Enable microphone access in Settings → Privacy & security → Microphone (including desktop app access).",
+      "macos": "Grant microphone access in System Settings → Privacy & Security → Microphone.",
+      "linux": "Grant microphone access in your system's sound or privacy settings."
+    },
+    "noInputDeviceTitle": "No Microphone Found",
+    "noInputDevice": "No audio input device was detected. Please connect a microphone or headset and try again.",
+    "recordingFailed": "Failed to start recording: {{error}}",
+    "modelLoadFailed": "Failed to load model: {{model}}",
+    "modelLoadFailedUnknown": "unknown model",
+    "pasteFailedTitle": "Failed to Paste Text",
+    "pasteFailed": "Text could not be pasted into the active application.",
+    "transcriptionFailedTitle": "Transcription Failed"
+  },
+  "appLanguage": {
+    "title": "Application Language",
+    "description": "Change the language of the Handy interface"
+  },
+  "theme": {
+    "title": "Application Theme",
+    "description": "Choose whether Handy follows your system theme or stays light or dark",
+    "options": {
+      "system": "System",
+      "light": "Light",
+      "dark": "Dark"
+    }
+  },
+  "overlay": {
+    "transcribing": "Transcribing...",
+    "processing": "Processing...",
+    "loadingModel": "Loading model..."
+  },
+  "secureInput": {
+    "blockedWithCulprit_one": "{{name}} may be blocking 1 shortcut",
+    "blockedWithCulprit_other": "{{name}} may be blocking {{count}} shortcuts",
+    "blockedNoCulprit_one": "macOS is temporarily blocking 1 shortcut",
+    "blockedNoCulprit_other": "macOS is temporarily blocking {{count}} shortcuts",
+    "recorderBlockedWithCulprit": "{{name}} may be blocking shortcut changes",
+    "recorderBlockedNoCulprit": "macOS is temporarily blocking shortcut changes",
+    "learnMore": "How to fix",
+    "recorderBlocked": "Can't record shortcuts right now — macOS Secure Input is blocking key events. Resolve the Secure Input warning first.",
+    "dismiss": "Dismiss"
+  }
+}

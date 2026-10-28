@@ -1,0 +1,102 @@
+name: "SelTranslate Test"
+
+# Rust unit tests (Windows, the platform the fork is tested on) and the
+# frontend checks (lint, TypeScript). Run by hand or on a push to the
+# `seltranslate` branch that touches the code.
+on:
+  workflow_dispatch:
+  push:
+    branches: [seltranslate]
+    paths:
+      - "src-tauri/**"
+      - "src/**"
+      - ".github/workflows/seltranslate-test.yml"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  rust-tests:
+    runs-on: windows-latest
+    steps:
+      - name: Enable long paths
+        shell: pwsh
+        run: |
+          New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem" `
+            -Name "LongPathsEnabled" -Value 1 -PropertyType DWORD -Force
+          git config --system core.longpaths true
+
+      - uses: actions/checkout@v5
+
+      - uses: oven-sh/setup-bun@v2
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - uses: swatinem/rust-cache@v2
+        with:
+          workspaces: "./src-tauri -> target"
+          key: windows-latest-test-v1
+          cache-bin: false
+
+      - name: Install Vulkan SDK
+        uses: humbletim/install-vulkan-sdk@v1.2
+        with:
+          version: 1.4.309.0
+          cache: true
+
+      # Same two steps as build.yml: the Vulkan SDK of the runner has no
+      # findable SPIRV-HeadersConfig.cmake, and Windows x64 links a baseline
+      # ONNX Runtime dynamically.
+      - name: Install SPIRV-Headers
+        shell: pwsh
+        run: |
+          vcpkg install spirv-headers:x64-windows
+          if ($LASTEXITCODE -ne 0) { throw "vcpkg install spirv-headers failed" }
+          $prefix = "$env:VCPKG_INSTALLATION_ROOT/installed/x64-windows" -replace '\\','/'
+          Add-Content $env:GITHUB_ENV "CMAKE_PREFIX_PATH=$prefix"
+
+      - name: Install ONNX Runtime
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $ORT_VERSION = "1.24.2"
+          $url = "https://github.com/microsoft/onnxruntime/releases/download/v$ORT_VERSION/onnxruntime-win-x64-$ORT_VERSION.zip"
+          Invoke-WebRequest -Uri $url -OutFile ort.zip
+          Expand-Archive -Path ort.zip -DestinationPath ort-dist -Force
+          $ortLib = (Resolve-Path "ort-dist/onnxruntime-win-x64-$ORT_VERSION/lib").Path
+          Add-Content -Path $env:GITHUB_ENV -Value "ORT_LIB_LOCATION=$ortLib"
+          Add-Content -Path $env:GITHUB_ENV -Value "ORT_PREFER_DYNAMIC_LINK=1"
+
+      - name: Install frontend dependencies
+        run: bun install
+
+      # The log of a failed run needs a sign-in to read; the first error lines
+      # are repeated as annotations, which are public.
+      - name: Run Rust tests
+        working-directory: src-tauri
+        shell: bash
+        run: |
+          set +e
+          cargo test --lib -- --skip silero_drops_pure_silence 2>&1 | tee test.log
+          code=${PIPESTATUS[0]}
+          if [ "$code" -ne 0 ]; then
+            grep -E "error|panicked|FAILED|left:|right:" test.log | tr -d '\r' | head -40 | while IFS= read -r line; do echo "::error::$line"; done
+          fi
+          exit "$code"
+
+  frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: oven-sh/setup-bun@v2
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Lint
+        run: bun run lint
+
+      - name: Type check
+        run: ./node_modules/.bin/tsc --noEmit
