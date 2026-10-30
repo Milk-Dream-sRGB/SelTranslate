@@ -17,7 +17,7 @@
 - **Everything stays on your computer.** No account, no cloud. After the one-time download of the translation model nothing leaves your machine.
 
 <p align="center">
-  <img src="docs/images/translate-popup.png" alt="The translation popup: Japanese to German, with a language picker on both sides" width="442">
+  <img src="docs/images/translate-popup.png" alt="The translation popup: English to French, with a language picker on both sides" width="442">
 </p>
 
 > SelTranslate is built on top of Handy by [CJ Pais](https://github.com/cjpais), released under the MIT license. All of Handy's dictation features are still here. This README only describes what the fork adds. For the original project, see the [Handy README](https://github.com/cjpais/Handy#readme) and [handy.computer](https://handy.computer).
