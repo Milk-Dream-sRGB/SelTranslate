@@ -1036,17 +1036,22 @@
         "description": "View source code and contribute",
         "button": "View on GitHub"
       },
-      "supportDevelopment": {
-        "title": "Support Development",
-        "description": "Help us continue building Handy",
-        "button": "Donate"
+      "supportAuthor": {
+        "title": "Say thanks",
+        "description": "Free fork. If it helped you, a small tip means a lot",
+        "button": "Send a tip"
+      },
+      "basedOnHandy": {
+        "title": "Based on Handy",
+        "description": "Original app by CJ Pais",
+        "button": "View on GitHub"
       },
       "acknowledgments": {
         "title": "Acknowledgments",
         "handy": {
           "title": "Handy",
           "description": "SelTranslate is a fork of Handy by CJ Pais, released under the MIT license",
-          "details": "Dictation, models, settings and the overlay come from Handy; this fork adds the Audio file tab and selection translation. Please support the original author with the Support development button above."
+          "details": "Dictation, models, settings and the overlay come from Handy; this fork adds the Audio file tab and selection translation. You can support the original author at handy.computer/donate."
         },
         "ggml": {
           "title": "ggml",

@@ -11,6 +11,11 @@ import { ShowWhatsNewOnUpdate } from "../ShowWhatsNewOnUpdate";
 import { ThemeSelector } from "../ThemeSelector";
 import { LogDirectory } from "../debug";
 
+// Donation page of the fork author (Lava Top).
+const DONATE_URL = "https://app.lava.top/seqvo";
+const HANDY_URL = "https://github.com/cjpais/Handy";
+const FORK_URL = "https://github.com/Milk-Dream-sRGB/SelTranslate";
+
 export const AboutSettings: React.FC = () => {
   const { t } = useTranslation();
   const [version, setVersion] = useState("");
@@ -31,7 +36,7 @@ export const AboutSettings: React.FC = () => {
 
   const handleDonateClick = async () => {
     try {
-      await openUrl("https://handy.computer/donate");
+      await openUrl(DONATE_URL);
     } catch (error) {
       console.error("Failed to open donate link:", error);
     }
@@ -54,12 +59,26 @@ export const AboutSettings: React.FC = () => {
         <ShowWhatsNewOnUpdate descriptionMode="tooltip" grouped={true} />
 
         <SettingContainer
-          title={t("settings.about.supportDevelopment.title")}
-          description={t("settings.about.supportDevelopment.description")}
+          title={t("settings.about.supportAuthor.title")}
+          description={t("settings.about.supportAuthor.description")}
           grouped={true}
         >
           <Button variant="primary" size="md" onClick={handleDonateClick}>
-            {t("settings.about.supportDevelopment.button")}
+            {t("settings.about.supportAuthor.button")}
+          </Button>
+        </SettingContainer>
+
+        <SettingContainer
+          title={t("settings.about.basedOnHandy.title")}
+          description={t("settings.about.basedOnHandy.description")}
+          grouped={true}
+        >
+          <Button
+            variant="secondary"
+            size="md"
+            onClick={() => openUrl(HANDY_URL)}
+          >
+            {t("settings.about.basedOnHandy.button")}
           </Button>
         </SettingContainer>
 
@@ -71,7 +90,7 @@ export const AboutSettings: React.FC = () => {
           <Button
             variant="secondary"
             size="md"
-            onClick={() => openUrl("https://github.com/cjpais/Handy")}
+            onClick={() => openUrl(FORK_URL)}
           >
             {t("settings.about.sourceCode.button")}
           </Button>

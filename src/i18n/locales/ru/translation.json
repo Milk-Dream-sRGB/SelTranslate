@@ -1032,17 +1032,22 @@
         "description": "Просмотреть исходный код и внести свой вклад",
         "button": "Посмотреть на GitHub"
       },
-      "supportDevelopment": {
-        "title": "Поддержка развития",
-        "description": "Помогите нам продолжать развитие Handy",
-        "button": "Поддержать"
+      "supportAuthor": {
+        "title": "Сказать спасибо",
+        "description": "Бесплатный форк. Если он вам помог, можно оставить небольшие чаевые",
+        "button": "Оставить на чай"
+      },
+      "basedOnHandy": {
+        "title": "Основано на Handy",
+        "description": "Оригинальное приложение от CJ Pais",
+        "button": "Открыть на GitHub"
       },
       "acknowledgments": {
         "title": "Благодарности",
         "handy": {
           "title": "Handy",
           "description": "SelTranslate — форк Handy от CJ Pais, распространяется по лицензии MIT",
-          "details": "Диктовка, модели, настройки и оверлей — из Handy; этот форк добавляет вкладку Audio file и перевод выделения. Поддержите автора оригинала кнопкой Support development выше."
+          "details": "Диктовка, модели, настройки и оверлей — из Handy; этот форк добавляет вкладку Audio file и перевод выделения. Поддержать автора оригинала можно на handy.computer/donate."
         },
         "ggml": {
           "title": "ggml",

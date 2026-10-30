@@ -83,6 +83,10 @@ bun run tauri build    # installer
 
 To keep merging Handy's updates easy, the additions sit in their own modules: `src-tauri/src/translate/` (translation, llama-server, setup), `src-tauri/src/commands/audio_file.rs` and the components under `src/components/settings/`. Existing Handy files are touched only to register them.
 
+## Say thanks
+
+SelTranslate is free. If it helped you, you can leave the author a small tip on [Lava Top](https://app.lava.top/seqvo). The original dictation app is made by CJ Pais, and you can support Handy at [handy.computer/donate](https://handy.computer/donate).
+
 ## License and credits
 
 MIT, the same as Handy. See [LICENSE](LICENSE). Handy is Copyright (c) 2025 CJ Pais; the modifications are released under the same license.

@@ -1,7 +1,7 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
   "productName": "SelTranslate",
-  "version": "0.9.8",
+  "version": "0.0.4",
   "identifier": "com.seltranslate.app",
   "build": {
     "beforeDevCommand": "bun run dev",
