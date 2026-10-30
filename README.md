@@ -89,6 +89,8 @@ SelTranslate is free. If it helped you, you can leave the author a small tip on 
 
 ## License and credits
 
-MIT, the same as Handy. See [LICENSE](LICENSE). Handy is Copyright (c) 2025 CJ Pais; the modifications are released under the same license.
+MIT, the same as Handy. See [LICENSE](LICENSE). Handy is Copyright (c) 2025 CJ Pais; the modifications are Copyright (c) 2026 Aleksey (Milk-Dream-sRGB) and released under the same license.
+
+No warranty: SelTranslate is provided "as is", free of charge, and you use it at your own risk. The builds are unsigned, and translations and transcripts can contain mistakes.
 
 Thanks to CJ Pais and the Handy contributors, to [llama.cpp](https://github.com/ggml-org/llama.cpp), and to the authors of the TranslateGemma models. The models are distributed under the [Gemma Terms of Use](https://ai.google.dev/gemma/terms).
