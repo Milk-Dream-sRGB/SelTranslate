@@ -35,6 +35,11 @@ import { formatDateTime } from "@/utils/dateFormat";
 import { AudioPlayer, AudioPlayerGroup } from "../../ui/AudioPlayer";
 import { Button } from "../../ui/Button";
 import { copyToClipboard } from "./clipboard";
+// SelTranslate: Translate on an entry.
+import {
+  EntryTranslationPanel,
+  TranslateEntryButton,
+} from "../translate/HistoryTranslate";
 import {
   pickAndTranscribeFiles,
   useFileReadsStore,
@@ -491,6 +496,10 @@ const HistoryEntryComponent: React.FC<HistoryEntryProps> = ({
               <Copy width={16} height={16} />
             )}
           </IconButton>
+          <TranslateEntryButton
+            entryId={entry.id}
+            disabled={!hasTranscription || retrying}
+          />
           <IconButton
             onClick={onToggleSaved}
             active={entry.saved}
@@ -579,6 +588,11 @@ const HistoryEntryComponent: React.FC<HistoryEntryProps> = ({
           </button>
         )}
       </div>
+
+      <EntryTranslationPanel
+        entryId={entry.id}
+        sourceName={entry.source_name}
+      />
 
       <AudioPlayer onLoadRequest={handleLoadAudio} className="w-full" />
     </div>

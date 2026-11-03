@@ -1,5 +1,7 @@
 //! B8: translate a whole text file (a transcript, say) through llama-server and
-//! save the result next to the source as `<name>.<lang>.txt`.
+//! save the result next to the source as `<name>.<lang>.txt`. The same job
+//! translates the text of a History entry (Handy's transcript of a recording
+//! or a file); that result is only shown under the entry, never saved here.
 //!
 //! Own `FILE_BUSY` / `FILE_CANCEL` flags, separate from the selection
 //! translation in `action`. While a file runs it is a long job
@@ -366,8 +368,29 @@ pub struct FileProbe {
     tgt: String,
 }
 
+/// What a job translates.
+enum Source {
+    File(PathBuf),
+    /// A History entry: its id goes along with every event, so the Translate
+    /// tab and History each take only their own.
+    Entry {
+        id: i64,
+        text: String,
+    },
+}
+
+impl Source {
+    fn entry_id(&self) -> Option<i64> {
+        match self {
+            Source::File(_) => None,
+            Source::Entry { id, .. } => Some(*id),
+        }
+    }
+}
+
 #[derive(Serialize, Clone)]
 struct ProgressEvent {
+    entry_id: Option<i64>,
     /// `starting_model` | `translating`
     phase: &'static str,
     done: usize,
@@ -380,6 +403,7 @@ struct ProgressEvent {
 
 #[derive(Serialize, Clone)]
 struct DoneEvent {
+    entry_id: Option<i64>,
     /// Where the result was saved; `None` when `save_error` says why not.
     output_path: Option<String>,
     save_error: Option<String>,
@@ -394,12 +418,18 @@ struct DoneEvent {
 
 #[derive(Serialize, Clone)]
 struct ErrorEvent {
+    entry_id: Option<i64>,
     message: String,
 }
 
-fn emit_error(app: &AppHandle, message: String) {
+#[derive(Serialize, Clone)]
+struct CancelledEvent {
+    entry_id: Option<i64>,
+}
+
+fn emit_error(app: &AppHandle, entry_id: Option<i64>, message: String) {
     warn!("Translate file: {message}");
-    let _ = app.emit("translate-file-error", ErrorEvent { message });
+    let _ = app.emit("translate-file-error", ErrorEvent { entry_id, message });
 }
 
 /// Language pair and size of a file, before the start.
@@ -426,6 +456,34 @@ pub async fn translate_file_probe(app: AppHandle, path: String) -> Result<FilePr
 #[tauri::command]
 #[specta::specta]
 pub fn translate_file_start(app: AppHandle, path: String) -> Result<(), String> {
+    start_job(app, Source::File(PathBuf::from(path)))
+}
+
+/// "Translate" on a History entry: the same job as a file, over the entry's
+/// text, with the entry's id in every event. Nothing is written to disk.
+#[tauri::command]
+#[specta::specta]
+pub async fn translate_history_entry_start(app: AppHandle, entry_id: i64) -> Result<(), String> {
+    let history = app
+        .try_state::<Arc<crate::managers::history::HistoryManager>>()
+        .ok_or("History is not available")?
+        .inner()
+        .clone();
+    let entry = history
+        .get_entry_by_id(entry_id)
+        .await
+        .map_err(|e| e.to_string())?
+        .ok_or("The History entry is gone")?;
+    start_job(
+        app,
+        Source::Entry {
+            id: entry_id,
+            text: entry.transcription_text,
+        },
+    )
+}
+
+fn start_job(app: AppHandle, source: Source) -> Result<(), String> {
     if FILE_BUSY.swap(true, Ordering::SeqCst) {
         return Err("A file translation is already running".into());
     }
@@ -441,7 +499,7 @@ pub fn translate_file_start(app: AppHandle, path: String) -> Result<(), String> 
             let _busy = BusyGuard;
             // Dictation and translation hotkeys say "wait" until this ends.
             let _job = crate::hotkeys_pause::job_lock(&app);
-            run(&app, PathBuf::from(path));
+            run(&app, source);
         });
     if let Err(e) = spawned {
         FILE_BUSY.store(false, Ordering::SeqCst);
@@ -469,15 +527,20 @@ pub fn translate_file_cancel(app: AppHandle) -> Result<(), String> {
     Ok(())
 }
 
-fn run(app: &AppHandle, path: PathBuf) {
+fn run(app: &AppHandle, source: Source) {
     let started = Instant::now();
-    let (text, crlf) = match read_source(&path) {
-        Ok(read) => read,
-        Err(e) => return emit_error(app, e),
+    let entry_id = source.entry_id();
+    let emit_error = |message: String| emit_error(app, entry_id, message);
+    let (text, crlf, path) = match source {
+        Source::File(path) => match read_source(&path) {
+            Ok((text, crlf)) => (text, crlf, Some(path)),
+            Err(e) => return emit_error(e),
+        },
+        Source::Entry { text, .. } => (text.replace("\r\n", "\n"), false, None),
     };
     let prepared = match prepare(&text, target_setting(app)) {
         Ok(prepared) => prepared,
-        Err(e) => return emit_error(app, e),
+        Err(e) => return emit_error(e),
     };
     let Prepared {
         dir,
@@ -488,7 +551,10 @@ fn run(app: &AppHandle, path: PathBuf) {
     } = prepared;
     info!(
         "Translate file: {} — {chars} chars, {} → {}, {pieces} pieces",
-        path.display(),
+        path.as_deref().map_or_else(
+            || format!("History entry {entry_id:?}"),
+            |p| p.display().to_string()
+        ),
         dir.src,
         dir.tgt
     );
@@ -497,6 +563,7 @@ fn run(app: &AppHandle, path: PathBuf) {
         let _ = app.emit(
             "translate-file-progress",
             ProgressEvent {
+                entry_id,
                 phase,
                 done: p.done,
                 total: p.total,
@@ -520,7 +587,7 @@ fn run(app: &AppHandle, path: PathBuf) {
     // The slot is fixed for the whole file (it cannot change under a long job).
     let cfg = settings::load(app);
     if !cfg.setup_ready() {
-        return emit_error(app, action::NOT_SET_UP.into());
+        return emit_error(action::NOT_SET_UP.into());
     }
     let slot = cfg.resolve_slot(cfg.file_slot);
     info!(
@@ -541,12 +608,12 @@ fn run(app: &AppHandle, path: PathBuf) {
             "Translate file: cancelled after {} ms",
             started.elapsed().as_millis()
         );
-        let _ = app.emit("translate-file-cancelled", ());
+        let _ = app.emit("translate-file-cancelled", CancelledEvent { entry_id });
     };
     let (port, key) = match super::ensure_server(app, slot) {
         Ok(connection) => connection,
         Err(_) if file_cancelled() => return cancelled_out(&server),
-        Err(e) => return emit_error(app, e),
+        Err(e) => return emit_error(e),
     };
     if file_cancelled() {
         return cancelled_out(&server);
@@ -583,16 +650,20 @@ fn run(app: &AppHandle, path: PathBuf) {
     let result = match result {
         Ok(result) => result,
         Err(FileFailure::Cancelled) => return cancelled_out(&server),
-        Err(failure) => return emit_error(app, failure.message()),
+        Err(failure) => return emit_error(failure.message()),
     };
 
     let out = restore_line_endings(&result.text, crlf);
-    let (output_path, save_error) = match save_next_to(&path, dir.tgt, &out) {
-        Ok(saved) => (Some(saved.display().to_string()), None),
-        Err(e) => {
-            warn!("Translate file: {e}");
-            (None, Some(e))
-        }
+    let (output_path, save_error) = match &path {
+        Some(path) => match save_next_to(path, dir.tgt, &out) {
+            Ok(saved) => (Some(saved.display().to_string()), None),
+            Err(e) => {
+                warn!("Translate file: {e}");
+                (None, Some(e))
+            }
+        },
+        // A History entry: shown under it, saved only by its Save button.
+        None => (None, None),
     };
     info!(
         "Translate file: done in {:.1} s, {} left untranslated, saved to {}",
@@ -603,6 +674,7 @@ fn run(app: &AppHandle, path: PathBuf) {
     let _ = app.emit(
         "translate-file-done",
         DoneEvent {
+            entry_id,
             output_path,
             save_error,
             text: out,

@@ -13,6 +13,7 @@ import { SettingsGroup } from "../../ui/SettingsGroup";
 import { copyToClipboard } from "../history/clipboard";
 import { isRunning, useTranslateFileStore } from "./translateFileStore";
 import { useFlash } from "@/hooks/useFlash";
+import { formatTime } from "./format";
 
 // Prefixes of the backend's error texts (translate/file.rs).
 const ERROR_KEYS: [string, string][] = [
@@ -21,14 +22,6 @@ const ERROR_KEYS: [string, string][] = [
   ["Nothing to translate", "translateSettings.file.nothing"],
   ["Translation is not set up yet", "translateSetup.setUpFirst"],
 ];
-
-const formatTime = (secs: number) => {
-  const s = Math.max(0, Math.round(secs));
-  const h = Math.floor(s / 3600);
-  const m = Math.floor((s % 3600) / 60);
-  const ss = String(s % 60).padStart(2, "0");
-  return h > 0 ? `${h}:${String(m).padStart(2, "0")}:${ss}` : `${m}:${ss}`;
-};
 
 const baseName = (path: string) => path.split(/[\\/]/).pop() ?? path;
 

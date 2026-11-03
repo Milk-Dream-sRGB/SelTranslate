@@ -1121,6 +1121,18 @@ async translateFileCancel() : Promise<Result<null, string>> {
     else return { status: "error", error: e  as any };
 }
 },
+/**
+ * "Translate" on a History entry: the same job as a file, over the entry's
+ * text, with the entry's id in every event. Nothing is written to disk.
+ */
+async translateHistoryEntryStart(entryId: number) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("translate_history_entry_start", { entryId }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
 async translateSetupPlan() : Promise<Result<SetupPlan, string>> {
     try {
     return { status: "ok", data: await TAURI_INVOKE("translate_setup_plan") };

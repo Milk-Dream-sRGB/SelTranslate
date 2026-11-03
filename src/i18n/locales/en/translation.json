@@ -113,7 +113,7 @@
     },
     "file": {
       "title": "Translate file",
-      "description": "Translate a whole text file (UTF-8 or UTF-16) with the local model. The result is saved next to it as name.en.txt (or name.ru.txt); the original is never changed. While it runs, dictation, the translate hotkey and double Ctrl only ask you to wait, and an audio file cannot be started.",
+      "description": "Translate a whole text file (UTF-8 or UTF-16) with the local model. The result is saved next to it as name.en.txt (or name.ru.txt); the original is never changed. While it runs, dictation, the translate hotkey and double Ctrl only ask you to wait. A transcript in History has its own Translate button.",
       "select": "Select file",
       "noFile": "No file selected",
       "filter": "Text files",
@@ -1361,5 +1361,13 @@
     "learnMore": "How to fix",
     "recorderBlocked": "Can't record shortcuts right now — macOS Secure Input is blocking key events. Resolve the Secure Input warning first.",
     "dismiss": "Dismiss"
+  },
+  "historyTranslate": {
+    "translate": "Translate",
+    "title": "Translation · {{src}} → {{tgt}}",
+    "close": "Hide translation",
+    "sameLanguage": "The text is already in the target language. Pick another one in Translation settings.",
+    "nothing": "There is nothing to translate in this entry.",
+    "progress": "Translating, piece {{done}} of {{total}}"
   }
 }

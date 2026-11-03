@@ -830,6 +830,7 @@ pub fn run(cli_args: CliArgs) {
             translate::file::translate_file_probe,
             translate::file::translate_file_start,
             translate::file::translate_file_cancel,
+            translate::file::translate_history_entry_start,
             translate::setup::translate_setup_plan,
             translate::setup::translate_setup_status,
             translate::setup::translate_setup_start,
