@@ -34,6 +34,8 @@ pub enum NoticeSource {
     Dictation,
     File,
     Model,
+    /// SelTranslate: the translation engine (llama-server).
+    Translate,
 }
 
 /// The frontend maps each code to its text in `src/lib/notices.ts`.
@@ -48,6 +50,11 @@ pub enum NoticeCode {
     PostProcessFailed,
     FileTranscriptionFailed,
     FilePostProcessFailed,
+    /// SelTranslate: CUDA did not start, translation now uses Vulkan.
+    TranslateSwitchedToVulkan,
+    /// SelTranslate: the video card engine did not start, translation runs
+    /// on the processor until the app restarts.
+    TranslateOnCpu,
 }
 
 impl NoticeCode {
@@ -60,7 +67,10 @@ impl NoticeCode {
             | Self::RecordingFailed
             | Self::ModelLoadFailed
             | Self::FileTranscriptionFailed => NoticeLevel::Error,
-            Self::PostProcessFailed | Self::FilePostProcessFailed => NoticeLevel::Warning,
+            Self::PostProcessFailed
+            | Self::FilePostProcessFailed
+            | Self::TranslateSwitchedToVulkan
+            | Self::TranslateOnCpu => NoticeLevel::Warning,
         }
     }
 
@@ -76,6 +86,8 @@ impl NoticeCode {
             Self::PostProcessFailed => &strings.post_process_failed_title,
             Self::FileTranscriptionFailed => &strings.file_transcription_failed_title,
             Self::FilePostProcessFailed => &strings.file_post_process_failed_title,
+            Self::TranslateSwitchedToVulkan => &strings.translate_switched_to_vulkan_title,
+            Self::TranslateOnCpu => &strings.translate_on_cpu_title,
         }
     }
 }

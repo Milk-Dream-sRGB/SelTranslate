@@ -1319,7 +1319,11 @@
     "filePostProcessFailedTitle": "Расшифровано без постобработки",
     "filePostProcessFailed": "Постобработка не завершилась, поэтому расшифровка сохранена как есть.",
     "fileTranscriptionFailedTitle": "Ошибка транскрипции файла",
-    "transcriptionFailedTitle": "Ошибка транскрипции"
+    "transcriptionFailedTitle": "Ошибка транскрипции",
+    "translateSwitchedToVulkanTitle": "Перевод переключён на Vulkan",
+    "translateSwitchedToVulkan": "CUDA не запустилась на этом компьютере, скорее всего из-за старого драйвера NVIDIA. Перевод теперь работает через движок Vulkan, как и раньше. После обновления драйвера можно вернуть CUDA в настройках перевода.",
+    "translateOnCpuTitle": "Перевод работает на процессоре",
+    "translateOnCpu": "Движок видеокарты не запустился, поэтому до перезапуска SelTranslate перевод идёт на процессоре. Он работает, только медленнее. Обычно помогает обновление драйвера видеокарты."
   },
   "notices": {
     "errorOne": "{{n}} ошибка",

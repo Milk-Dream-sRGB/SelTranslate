@@ -185,8 +185,11 @@ pub fn engine_info(app_data: &Path, exe: &Path) -> EngineInfo {
         ]
         .into_iter()
         .filter(|f| {
+            let spare = *f == EngineFlavor::Vulkan
+                && exe.starts_with(catalog::engine_dir(app_data, EngineFlavor::Cuda));
             catalog::engine_exe(app_data, *f).is_file()
                 && !exe.starts_with(catalog::engine_dir(app_data, *f))
+                && !spare
         })
         .collect(),
     }
@@ -600,6 +603,29 @@ impl Ctx {
     }
 }
 
+/// CUDA passes `--list-devices` on a driver too old for it and crashes only
+/// on the first translation. Vulkan next to it (~30 MB) is what
+/// `translate::fallback` switches to then, so the user never has to. Its
+/// failure does not fail the CUDA install; `false` only for a cancel.
+async fn spare_vulkan(ctx: &Ctx) -> bool {
+    if catalog::engine_exe(&ctx.app_data, EngineFlavor::Vulkan).is_file() {
+        return true;
+    }
+    let vulkan = catalog::item(catalog::ENGINE_VULKAN).expect("catalog");
+    ctx.add_total(vulkan.size);
+    match ctx.engine(EngineFlavor::Vulkan).await {
+        Ok(Some(_)) => {
+            info!("Translate setup: Vulkan installed as the spare engine for CUDA");
+            true
+        }
+        Ok(None) => false,
+        Err(e) => {
+            warn!("Translate setup: no spare Vulkan engine: {}", e.message);
+            true
+        }
+    }
+}
+
 /// Stops llama-server when it runs from `dir` (an engine being replaced).
 fn stop_server_using(app: &AppHandle, dir: &Path) {
     let current = PathBuf::from(settings::load(app).llama_server_path);
@@ -737,6 +763,9 @@ async fn run(
             result.engine_exe = Some(catalog::engine_exe(&ctx.app_data, flavor));
             done.installed
                 .extend(flavor.items().iter().map(|s| s.to_string()));
+            if flavor == EngineFlavor::Cuda && !spare_vulkan(ctx).await {
+                return Ok(None);
+            }
         }
         let sees = !devices.is_empty();
         result.engine_sees_gpu = Some(sees);
@@ -776,6 +805,7 @@ async fn run(
     settings::save(&ctx.app, &s)
         .map_err(|e| (String::new(), SetupError::new(ErrorKind::Other, e)))?;
     let app = ctx.app.clone();
+    super::reset_cpu_fallback();
     let _ = tauri::async_runtime::spawn_blocking(move || super::stop_server(&app)).await;
     done.gpu_layers = s.gpu_layers;
     done.engine_sees_gpu = result.engine_sees_gpu;
@@ -1310,6 +1340,13 @@ mod tests {
         let info = engine_info(&app_data, &own);
         assert_eq!((info.current, info.own_files), (EngineKind::Cuda, true));
         assert_eq!(info.unused, [EngineFlavor::Vulkan], "ours, not in use");
+        // The setup's CUDA: the Vulkan next to it is its spare, not unused.
+        let cuda = catalog::engine_exe(&app_data, EngineFlavor::Cuda);
+        touch(&cuda, 1);
+        touch(&cuda.with_file_name("ggml-cuda.dll"), 1);
+        let info = engine_info(&app_data, &cuda);
+        assert_eq!(info.current, EngineKind::Cuda);
+        assert!(info.unused.is_empty(), "the spare Vulkan stays");
         assert_eq!(engine_kind(&cpu), EngineKind::Cpu);
         assert_eq!(
             engine_kind(&dir.path().join("none.exe")),

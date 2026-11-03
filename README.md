@@ -42,6 +42,7 @@ Select text in any app, press the shortcut (or **double Ctrl**), and get the tra
 ### Other changes
 
 - Own application identifier, name, logo and icon, so SelTranslate installs next to the official Handy and is never mistaken for it.
+- When the CUDA engine does not start (an NVIDIA driver that is too old), translation switches to Vulkan by itself, or to the processor if there is no Vulkan engine, and says so in a notice.
 - The auto-updater is turned off (it would replace the fork with the official build).
 
 ## Install

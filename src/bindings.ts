@@ -1673,7 +1673,16 @@ detail: string | null }
 /**
  * The frontend maps each code to its text in `src/lib/notices.ts`.
  */
-export type NoticeCode = "TranscriptionFailed" | "PasteFailed" | "NoMicrophone" | "MicPermissionDenied" | "RecordingFailed" | "ModelLoadFailed" | "PostProcessFailed" | "FileTranscriptionFailed" | "FilePostProcessFailed"
+export type NoticeCode = "TranscriptionFailed" | "PasteFailed" | "NoMicrophone" | "MicPermissionDenied" | "RecordingFailed" | "ModelLoadFailed" | "PostProcessFailed" | "FileTranscriptionFailed" | "FilePostProcessFailed" | 
+/**
+ * SelTranslate: CUDA did not start, translation now uses Vulkan.
+ */
+"TranslateSwitchedToVulkan" | 
+/**
+ * SelTranslate: the video card engine did not start, translation runs
+ * on the processor until the app restarts.
+ */
+"TranslateOnCpu"
 export type NoticeLevel = 
 /**
  * Nothing came out, or Handy can't do its job.
@@ -1688,7 +1697,11 @@ export type NoticeLevel =
  * overlay: a file job finishes while the user is doing something else, and
  * `Model` is a switch the user made in Settings or the tray.
  */
-export type NoticeSource = "dictation" | "file" | "model"
+export type NoticeSource = "dictation" | "file" | "model" | 
+/**
+ * SelTranslate: the translation engine (llama-server).
+ */
+"translate"
 export type NoticesChanged = { 
 /**
  * Every active notice, newest first.

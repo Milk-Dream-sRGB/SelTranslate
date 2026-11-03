@@ -1319,7 +1319,11 @@
     "filePostProcessFailedTitle": "Transcribed Without Post-Processing",
     "filePostProcessFailed": "Post Process didn't finish, so the transcript was saved as is.",
     "fileTranscriptionFailedTitle": "File Transcription Failed",
-    "transcriptionFailedTitle": "Transcription Failed"
+    "transcriptionFailedTitle": "Transcription Failed",
+    "translateSwitchedToVulkanTitle": "Translation Switched to Vulkan",
+    "translateSwitchedToVulkan": "CUDA didn't start on this computer, most likely because the NVIDIA driver is too old. Translation now uses the Vulkan engine and works as before. After a driver update you can switch back to CUDA in Translation settings.",
+    "translateOnCpuTitle": "Translation Runs on the Processor",
+    "translateOnCpu": "The video card engine didn't start, so translation uses the processor until SelTranslate restarts. It works, just slower. Updating the video card driver usually fixes this."
   },
   "notices": {
     "errorOne": "{{n}} error",

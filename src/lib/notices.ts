@@ -46,6 +46,14 @@ const NOTICE_DISPLAY: Record<NoticeCode, NoticeDisplay> = {
     title: "errors.filePostProcessFailedTitle",
     explanation: (t) => t("errors.filePostProcessFailed"),
   },
+  TranslateSwitchedToVulkan: {
+    title: "errors.translateSwitchedToVulkanTitle",
+    explanation: (t) => t("errors.translateSwitchedToVulkan"),
+  },
+  TranslateOnCpu: {
+    title: "errors.translateOnCpuTitle",
+    explanation: (t) => t("errors.translateOnCpu"),
+  },
 };
 
 export const noticeDisplay = (code: NoticeCode) => NOTICE_DISPLAY[code];
