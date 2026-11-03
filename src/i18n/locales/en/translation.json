@@ -274,8 +274,8 @@
     "advanced": "Advanced",
     "engine": {
       "title": "Engine",
-      "vulkan": "Vulkan — any video card",
-      "cuda": "CUDA — NVIDIA only",
+      "vulkan": "Vulkan: any video card (recommended)",
+      "cuda": "CUDA: NVIDIA only",
       "short": {
         "vulkan": "Vulkan",
         "cuda": "CUDA",
@@ -287,7 +287,8 @@
       "startFailed": "The engine did not start. The previous engine is kept.",
       "downloadQuestion": "Download the {{name}} engine, {{size}}?",
       "ownReplace": "Your own engine files will no longer be used (they stay where they are).",
-      "metal": "Metal — Apple Silicon graphics"
+      "metal": "Metal — Apple Silicon graphics",
+      "cudaHint": "CUDA can be faster on NVIDIA cards, but it needs a recent driver (version 580 or newer). If CUDA doesn't start, translation switches to Vulkan by itself."
     },
     "deleteEngine": "Delete the unused engine",
     "deleteEngineConfirm": "Delete the engine files that are not in use ({{names}})? You can download them again later.",

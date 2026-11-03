@@ -401,11 +401,13 @@ export const TranslateSetup: React.FC<TranslateSetupProps> = ({ advanced }) => {
             </label>
           ))}
         </div>
-        {!plan.nvidia && (
-          <p className="text-xs text-ink-3">
-            {t("translateSetup.engine.nvidiaOnly")}
-          </p>
-        )}
+        <p className="text-xs text-ink-3">
+          {t(
+            plan.nvidia
+              ? "translateSetup.engine.cudaHint"
+              : "translateSetup.engine.nvidiaOnly",
+          )}
+        </p>
         {busy && (
           <p className="text-xs text-ink-3">
             {t("translateSetup.engine.busy")}
@@ -832,9 +834,13 @@ export const TranslateSetup: React.FC<TranslateSetupProps> = ({ advanced }) => {
               </label>
             );
           })}
-          {hasEngineChoice && !plan.nvidia && (
+          {hasEngineChoice && (
             <p className="text-xs text-ink-3">
-              {t("translateSetup.engine.nvidiaOnly")}
+              {t(
+                plan.nvidia
+                  ? "translateSetup.engine.cudaHint"
+                  : "translateSetup.engine.nvidiaOnly",
+              )}
             </p>
           )}
         </div>
