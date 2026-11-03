@@ -40,6 +40,11 @@ import {
   EntryTranslationPanel,
   TranslateEntryButton,
 } from "../translate/HistoryTranslate";
+// SelTranslate: Speakers on an entry.
+import {
+  EntrySpeakersPanel,
+  SpeakersEntryButton,
+} from "../translate/HistorySpeakers";
 import {
   pickAndTranscribeFiles,
   useFileReadsStore,
@@ -500,6 +505,7 @@ const HistoryEntryComponent: React.FC<HistoryEntryProps> = ({
             entryId={entry.id}
             disabled={!hasTranscription || retrying}
           />
+          <SpeakersEntryButton entryId={entry.id} disabled={retrying} />
           <IconButton
             onClick={onToggleSaved}
             active={entry.saved}
@@ -593,6 +599,7 @@ const HistoryEntryComponent: React.FC<HistoryEntryProps> = ({
         entryId={entry.id}
         sourceName={entry.source_name}
       />
+      <EntrySpeakersPanel entryId={entry.id} sourceName={entry.source_name} />
 
       <AudioPlayer onLoadRequest={handleLoadAudio} className="w-full" />
     </div>

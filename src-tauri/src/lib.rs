@@ -26,6 +26,7 @@ mod secure_input;
 mod settings;
 mod shortcut;
 mod signal_handle;
+mod speakers;
 mod system_languages;
 mod transcription_coordinator;
 mod transcription_hook;
@@ -831,6 +832,11 @@ pub fn run(cli_args: CliArgs) {
             translate::file::translate_file_start,
             translate::file::translate_file_cancel,
             translate::file::translate_history_entry_start,
+            speakers::speakers_state,
+            speakers::speakers_set_options,
+            speakers::speakers_delete_variant,
+            speakers::speakers_start,
+            speakers::speakers_cancel,
             translate::setup::translate_setup_plan,
             translate::setup::translate_setup_status,
             translate::setup::translate_setup_start,

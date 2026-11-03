@@ -1190,6 +1190,8 @@ pub fn get_settings(app: &AppHandle) -> AppSettings {
         store.set("settings", serde_json::to_value(&settings).unwrap());
     }
 
+    // SelTranslate: a Speakers job's language, on its own thread only.
+    crate::speakers::apply_language_override(&mut settings);
     settings
 }
 

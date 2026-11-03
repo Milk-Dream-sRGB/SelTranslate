@@ -1123,7 +1123,7 @@ async translateFileCancel() : Promise<Result<null, string>> {
 },
 /**
  * "Translate" on a History entry: the same job as a file, over the entry's
- * text, with the entry's id in every event. Nothing is written to disk.
+ * newest text, with the entry's id in every event. Nothing is written to disk.
  */
 async translateHistoryEntryStart(entryId: number) : Promise<Result<null, string>> {
     try {
@@ -1132,6 +1132,45 @@ async translateHistoryEntryStart(entryId: number) : Promise<Result<null, string>
     if(e instanceof Error) throw e;
     else return { status: "error", error: e  as any };
 }
+},
+async speakersState() : Promise<Result<SpeakersState, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("speakers_state") };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async speakersSetOptions(options: SpeakersOptions) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("speakers_set_options", { options }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async speakersDeleteVariant(id: string) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("speakers_delete_variant", { id }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+/**
+ * Starts the job with the saved options; progress and the outcome come as
+ * `speakers-progress` / `-done` / `-error` / `-cancelled`.
+ */
+async speakersStart(entryId: number) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("speakers_start", { entryId }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async speakersCancel() : Promise<void> {
+    await TAURI_INVOKE("speakers_cancel");
 },
 async translateSetupPlan() : Promise<Result<SetupPlan, string>> {
     try {
@@ -1905,6 +1944,27 @@ export type ShortcutBinding = { id: string; name: string; description: string; d
 export type Slot = "fast" | "quality"
 export type SoundTheme = "marimba" | "pop" | "custom"
 /**
+ * The panel's choices, remembered between runs.
+ */
+export type SpeakersOptions = { 
+/**
+ * A `catalog::VARIANTS` id.
+ */
+variant: string; 
+/**
+ * Spoken language of the file: a code, or "" for Handy's setting.
+ */
+language: string; 
+/**
+ * How many people talk; 0 when the diarizer decides.
+ */
+speakers: number }
+export type SpeakersState = { options: SpeakersOptions; variants: VariantView[]; license: string; 
+/**
+ * The entry being worked on, if any.
+ */
+running: number | null }
+/**
  * Phase of the streaming overlay card, emitted to drive its UI state.
  */
 export type StreamPhase = 
@@ -1986,6 +2046,11 @@ export type TranscriptionOutcome =
 "failed"
 export type TypingTool = "auto" | "wtype" | "kwtype" | "dotool" | "ydotool" | "xdotool"
 export type VadBackend = "silero" | "earshot"
+export type VariantView = { id: string; 
+/**
+ * f64 for the TypeScript bindings, as elsewhere.
+ */
+size_bytes: number; downloaded: boolean }
 export type WindowsMicrophonePermissionStatus = { supported: boolean; overall_access: PermissionAccess; device_access: PermissionAccess; app_access: PermissionAccess; desktop_app_access: PermissionAccess }
 
 /** tauri-specta globals **/
