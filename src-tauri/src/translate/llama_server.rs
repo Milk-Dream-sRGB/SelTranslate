@@ -1449,6 +1449,7 @@ mod tests {
             allow_base_url_edit: false,
             models_endpoint: None,
             supports_structured_output: false,
+            api_format: crate::settings::PostProcessApiFormat::OpenAi,
         };
         // DESIGN B.3, ru → en.
         let prompt = "You are a professional Russian (ru) to English (en) translator. Your goal is \

@@ -3,7 +3,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { open } from "@tauri-apps/plugin-dialog";
 import { type as osType } from "@tauri-apps/plugin-os";
-import { toast } from "sonner";
+import { notify } from "@/stores/noticeStore";
 import { commands } from "@/bindings";
 import type {
   OutputMode,
@@ -176,7 +176,7 @@ const NumberField: React.FC<NumberFieldProps> = ({
           }}
         />
         {suffix && <span className="text-sm">{suffix}</span>}
-        {note && <span className="text-sm text-mid-gray">{note}</span>}
+        {note && <span className="text-sm text-ink-3">{note}</span>}
       </div>
     </SettingContainer>
   );
@@ -232,7 +232,9 @@ export const TranslateSettings: React.FC = () => {
     const next = { ...settings, ...patch };
     const result = await commands.setTranslateSettings(next);
     if (result.status !== "ok") {
-      toast.error(t("translateSettings.saveFailed", { error: result.error }));
+      notify({
+        title: t("translateSettings.saveFailed", { error: result.error }),
+      });
       return false;
     }
     setSettings(next);
@@ -520,12 +522,12 @@ export const TranslateSettings: React.FC = () => {
                 {t("translateSettings.test.stop")}
               </Button>
             )}
-            <span className="text-sm text-mid-gray">
+            <span className="text-sm text-ink-3">
               {setupReady ? statusLine : t("translateSetup.setUpFirst")}
             </span>
           </div>
           {testError && (
-            <p className="text-sm text-red-400 break-words whitespace-pre-wrap">
+            <p className="text-sm text-error break-words whitespace-pre-wrap">
               {testError}
             </p>
           )}

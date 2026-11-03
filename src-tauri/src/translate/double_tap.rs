@@ -8,7 +8,7 @@
 //!   low-level keyboard hook that only observes: it was created without
 //!   blocking hotkeys, so it never swallows a key) in its own thread. The
 //!   listener exists only while `double_ctrl_enabled` is on and the hotkeys
-//!   are not paused (Pause hotkeys, audio-file job); otherwise the thread is
+//!   are not paused (Pause hotkeys); otherwise the thread is
 //!   joined and the hooks are gone, so a game sees no hook of ours.
 
 use std::sync::atomic::{AtomicBool, Ordering};

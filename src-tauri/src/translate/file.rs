@@ -755,18 +755,26 @@ mod tests {
 
     #[test]
     fn a_picked_target_language_sets_the_direction_and_the_file_name() {
-        let prepared = prepare("Привет.
+        let prepared = prepare(
+            "Привет.
 
-Как дела?", Some("de")).unwrap();
+Как дела?",
+            Some("de"),
+        )
+        .unwrap();
         assert_eq!((prepared.dir.src, prepared.dir.tgt), ("ru", "de"));
         assert_eq!(
             output_path(Path::new("talk.md"), prepared.dir.tgt, |_| false),
             Path::new("talk.de.txt")
         );
         assert_eq!(
-            prepare("Привет.
+            prepare(
+                "Привет.
 
-Как дела?", Some("ru")).unwrap_err(),
+Как дела?",
+                Some("ru")
+            )
+            .unwrap_err(),
             SAME_LANGUAGE
         );
     }

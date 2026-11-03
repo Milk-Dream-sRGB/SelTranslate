@@ -1,7 +1,5 @@
 pub mod audio;
-pub mod audio_file;
 pub mod history;
-pub mod library;
 pub mod models;
 pub mod transcription;
 
@@ -195,4 +193,23 @@ pub fn initialize_shortcuts(app: AppHandle) -> Result<(), String> {
 
     log::info!("Shortcuts initialized successfully");
     Ok(())
+}
+
+/// Mark onboarding as finished; called when its last screen closes, so quitting
+/// midway resumes the flow.
+#[specta::specta]
+#[tauri::command]
+pub fn complete_onboarding(app: AppHandle) -> Result<(), String> {
+    let mut settings = crate::settings::get_settings(&app);
+    settings.onboarding_completed = true;
+    crate::settings::write_settings(&app, settings);
+    Ok(())
+}
+
+/// SelTranslate: writes text to a path picked in the Save dialog (the fs
+/// plugin scope only covers app data), for a translated file.
+#[tauri::command]
+#[specta::specta]
+pub fn save_text_file(path: String, text: String) -> Result<(), String> {
+    std::fs::write(&path, text).map_err(|e| format!("Failed to save {path}: {e}"))
 }
