@@ -460,7 +460,7 @@ pub fn translate_file_start(app: AppHandle, path: String) -> Result<(), String> 
 }
 
 /// "Translate" on a History entry: the same job as a file, over the entry's
-/// text, with the entry's id in every event. Nothing is written to disk.
+/// newest text, with the entry's id in every event. Nothing is written to disk.
 #[tauri::command]
 #[specta::specta]
 pub async fn translate_history_entry_start(app: AppHandle, entry_id: i64) -> Result<(), String> {
@@ -478,9 +478,17 @@ pub async fn translate_history_entry_start(app: AppHandle, entry_id: i64) -> Res
         app,
         Source::Entry {
             id: entry_id,
-            text: entry.transcription_text,
+            text: latest_text(entry.transcription_text, entry.post_processed_text),
         },
     )
+}
+
+/// The newest version of an entry: its post-processed text when it has one,
+/// otherwise the transcript.
+fn latest_text(transcript: String, post_processed: Option<String>) -> String {
+    post_processed
+        .filter(|text| !text.trim().is_empty())
+        .unwrap_or(transcript)
 }
 
 fn start_job(app: AppHandle, source: Source) -> Result<(), String> {
@@ -823,6 +831,18 @@ mod tests {
         let prepared = prepare("Привет.\n\nКак дела?", None).unwrap();
         assert_eq!((prepared.dir.src, prepared.dir.tgt), ("ru", "en"));
         assert_eq!(prepared.pieces, 2);
+    }
+
+    #[test]
+    fn an_entry_is_translated_in_its_newest_version() {
+        let latest = |post: Option<&str>| latest_text("raw".into(), post.map(String::from));
+        assert_eq!(latest(Some("edited")), "edited");
+        assert_eq!(latest(None), "raw");
+        assert_eq!(
+            latest(Some("  ")),
+            "raw",
+            "a blank post-process is no version"
+        );
     }
 
     #[test]
