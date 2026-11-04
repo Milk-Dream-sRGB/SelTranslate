@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { getVersion } from "@tauri-apps/api/app";
 
 import ModelSelector from "../model-selector";
+import UpdateChecker from "../update-checker";
+import { useSettings } from "../../hooks/useSettings";
 import NoticeChip from "./NoticeChip";
 import TranscriptionStatus from "./TranscriptionStatus";
 
@@ -11,6 +13,12 @@ interface FooterProps {
 
 const Footer: React.FC<FooterProps> = ({ onShowHistory }) => {
   const [version, setVersion] = useState("");
+  // SelTranslate: with update checks off the footer shows only the version,
+  // not Handy's "Update Checking Disabled".
+  const { getSetting, updateChecksLocked } = useSettings();
+  const updateChecksOn =
+    (getSetting("update_checks_enabled") ?? false) &&
+    updateChecksLocked === false;
 
   useEffect(() => {
     const fetchVersion = async () => {
@@ -35,9 +43,14 @@ const Footer: React.FC<FooterProps> = ({ onShowHistory }) => {
         </div>
 
         <div className="flex items-center gap-3">
-          {/* SelTranslate: no update status; the fork has no update feed
-              (tauri.conf.json, empty updater endpoints). */}
+          {/* Update Status */}
           <div className="flex items-center gap-1">
+            {updateChecksOn && (
+              <>
+                <UpdateChecker />
+                <span>•</span>
+              </>
+            )}
             {/* eslint-disable-next-line i18next/no-literal-string */}
             <span>v{version}</span>
           </div>

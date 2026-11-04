@@ -12,6 +12,7 @@ import {
   resolvePortableInstallerUrl,
   PORTABLE_RELEASES_URL,
 } from "./portableInstaller";
+import { rememberPendingUpdate, startWeeklyChecks } from "@/lib/updateSchedule";
 
 interface UpdateCheckerProps {
   className?: string;
@@ -61,7 +62,8 @@ const UpdateChecker: React.FC<UpdateCheckerProps> = ({ className = "" }) => {
       return;
     }
 
-    checkForUpdates();
+    // SelTranslate: automatic checks once a week, not on every start.
+    const stopWeekly = startWeeklyChecks(() => void checkForUpdates());
 
     // Listen for update check events
     const updateUnlisten = listen("check-for-updates", () => {
@@ -69,6 +71,7 @@ const UpdateChecker: React.FC<UpdateCheckerProps> = ({ className = "" }) => {
     });
 
     return () => {
+      stopWeekly();
       if (upToDateTimeoutRef.current) {
         clearTimeout(upToDateTimeoutRef.current);
       }
@@ -85,6 +88,7 @@ const UpdateChecker: React.FC<UpdateCheckerProps> = ({ className = "" }) => {
       const update = await check();
 
       if (update) {
+        rememberPendingUpdate();
         setUpdateAvailable(true);
         setShowUpToDate(false);
         // Portable installs can't self-update in place — the manual dialog links

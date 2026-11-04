@@ -1100,7 +1100,7 @@
       },
       "updateChecks": {
         "label": "Check for Updates",
-        "description": "Automatically check for new versions of SelTranslate",
+        "description": "Once a week, look for a new version of SelTranslate on GitHub. You can also check any time from the footer or the tray.",
         "lockedDescription": "Disabled by system configuration (HANDY_DISABLE_UPDATER)"
       },
       "whatsNewPreview": {
