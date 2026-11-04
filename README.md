@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/images/banner.png" alt="SelTranslate: translate selected text, fully offline" width="720">
+  <img src="docs/images/banner.png" alt="SelTranslate: hover translation, file translation and who spoke when, fully offline" width="720">
 </p>
 
 <p align="center">
