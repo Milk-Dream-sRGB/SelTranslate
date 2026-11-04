@@ -11,6 +11,12 @@ on:
       - "src-tauri/**"
       - "src/**"
       - ".github/workflows/seltranslate-test.yml"
+  pull_request:
+    branches: [seltranslate]
+    paths:
+      - "src-tauri/**"
+      - "src/**"
+      - ".github/workflows/seltranslate-test.yml"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}

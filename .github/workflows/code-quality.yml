@@ -35,6 +35,8 @@ concurrency:
 
 jobs:
   code-quality:
+    # SelTranslate: Handy's own check; the fork runs seltranslate-test.yml.
+    if: github.repository == 'cjpais/Handy'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
