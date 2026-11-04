@@ -4,7 +4,7 @@ import React, { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { open, save } from "@tauri-apps/plugin-dialog";
 import { revealItemInDir } from "@tauri-apps/plugin-opener";
-import { toast } from "sonner";
+import { notify } from "@/stores/noticeStore";
 import { commands } from "@/bindings";
 import type { Slot } from "@/bindings";
 import { Button } from "../../ui/Button";
@@ -12,6 +12,8 @@ import { Dropdown } from "../../ui/Dropdown";
 import { SettingsGroup } from "../../ui/SettingsGroup";
 import { copyToClipboard } from "../history/clipboard";
 import { isRunning, useTranslateFileStore } from "./translateFileStore";
+import { useFlash } from "@/hooks/useFlash";
+import { formatTime } from "./format";
 
 // Prefixes of the backend's error texts (translate/file.rs).
 const ERROR_KEYS: [string, string][] = [
@@ -20,14 +22,6 @@ const ERROR_KEYS: [string, string][] = [
   ["Nothing to translate", "translateSettings.file.nothing"],
   ["Translation is not set up yet", "translateSetup.setUpFirst"],
 ];
-
-const formatTime = (secs: number) => {
-  const s = Math.max(0, Math.round(secs));
-  const h = Math.floor(s / 3600);
-  const m = Math.floor((s % 3600) / 60);
-  const ss = String(s % 60).padStart(2, "0");
-  return h > 0 ? `${h}:${String(m).padStart(2, "0")}:${ss}` : `${m}:${ss}`;
-};
 
 const baseName = (path: string) => path.split(/[\\/]/).pop() ?? path;
 
@@ -44,6 +38,7 @@ export const TranslateFile: React.FC<TranslateFileProps> = ({
   onSlotChange,
 }) => {
   const { t } = useTranslation();
+  const [flashed, flash] = useFlash();
   const {
     path,
     probe,
@@ -80,9 +75,9 @@ export const TranslateFile: React.FC<TranslateFileProps> = ({
   const handleCopy = async () => {
     if (!result) return;
     if (await copyToClipboard(result.text)) {
-      toast.success(t("translateSettings.file.copied"));
+      flash("copied");
     } else {
-      toast.error(t("translateSettings.file.copyFailed"));
+      notify({ title: t("translateSettings.file.copyFailed") });
     }
   };
 
@@ -91,7 +86,9 @@ export const TranslateFile: React.FC<TranslateFileProps> = ({
     try {
       await revealItemInDir(result.output_path);
     } catch (e) {
-      toast.error(t("translateSettings.file.showFailed", { error: String(e) }));
+      notify({
+        title: t("translateSettings.file.showFailed", { error: String(e) }),
+      });
     }
   };
 
@@ -104,13 +101,13 @@ export const TranslateFile: React.FC<TranslateFileProps> = ({
       ],
     });
     if (!target) return;
-    const saved = await commands.saveAudioFileText(target, result.text);
+    const saved = await commands.saveTextFile(target, result.text);
     if (saved.status === "ok") {
-      toast.success(t("translateSettings.file.saved"));
+      flash("saved");
     } else {
-      toast.error(
-        t("translateSettings.file.saveAsFailed", { error: saved.error }),
-      );
+      notify({
+        title: t("translateSettings.file.saveAsFailed", { error: saved.error }),
+      });
     }
   };
 
@@ -192,12 +189,12 @@ export const TranslateFile: React.FC<TranslateFileProps> = ({
             onSelect={(value) => onSlotChange(value as Slot)}
             disabled={running}
           />
-          <span className="text-sm text-mid-gray">
+          <span className="text-sm text-ink-3">
             {ready ? statusLine : t("translateSetup.setUpFirst")}
           </span>
         </div>
         {running && (
-          <div className="h-2 w-full rounded bg-mid-gray/20 overflow-hidden">
+          <div className="h-2 w-full rounded bg-line overflow-hidden">
             <div
               className={`h-full bg-logo-primary transition-[width] duration-300 ${
                 status === "starting_model" ? "w-full animate-pulse" : ""
@@ -211,7 +208,7 @@ export const TranslateFile: React.FC<TranslateFileProps> = ({
           </div>
         )}
         {status === "error" && error && (
-          <p className="text-sm text-red-400 break-words whitespace-pre-wrap">
+          <p className="text-sm text-error break-words whitespace-pre-wrap">
             {errorKey ? t(errorKey) : error}
           </p>
         )}
@@ -226,7 +223,7 @@ export const TranslateFile: React.FC<TranslateFileProps> = ({
               })}
             </p>
           ) : (
-            <p className="text-sm text-red-400 break-words">
+            <p className="text-sm text-error break-words">
               {t("translateSettings.file.saveFailed", {
                 error: result.save_error ?? "",
               })}
@@ -246,11 +243,15 @@ export const TranslateFile: React.FC<TranslateFileProps> = ({
               </Button>
             )}
             <Button variant="secondary" onClick={() => void handleCopy()}>
-              {t("translateSettings.file.copy")}
+              {flashed === "copied"
+                ? t("translateSettings.file.copied")
+                : t("translateSettings.file.copy")}
             </Button>
             {!result.output_path && (
               <Button variant="primary" onClick={() => void handleSaveAs()}>
-                {t("translateSettings.file.saveAs")}
+                {flashed === "saved"
+                  ? t("translateSettings.file.saved")
+                  : t("translateSettings.file.saveAs")}
               </Button>
             )}
           </div>

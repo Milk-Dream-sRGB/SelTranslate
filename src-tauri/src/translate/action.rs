@@ -425,7 +425,13 @@ fn translate_job(app: &AppHandle, job: Job, fast_shown: Option<PopupView>) {
 
     // The same text through the same model and style is answered from memory
     // (no server start, no waiting); "Translate again" skips the lookup.
-    let cache_key = cache::key(&text, cfg.model_for(slot), &format!("{style:?}"), dir.src, dir.tgt);
+    let cache_key = cache::key(
+        &text,
+        cfg.model_for(slot),
+        &format!("{style:?}"),
+        dir.src,
+        dir.tgt,
+    );
     let cached = if fresh || total == 0 {
         None
     } else {
@@ -620,6 +626,7 @@ pub(super) fn local_provider(port: u16) -> PostProcessProvider {
         allow_base_url_edit: false,
         models_endpoint: None,
         supports_structured_output: false,
+        api_format: crate::settings::PostProcessApiFormat::OpenAi,
     }
 }
 
@@ -1189,14 +1196,10 @@ mod tests {
             took
         };
         let speech = {
-            let mut decoder = crate::audio_file::decoder::StreamingDecoder::open(
-                std::path::Path::new(&var("SELTRANSLATE_SPEECH")),
-            )
+            let mut pcm = crate::audio_toolkit::decode_audio_file(std::path::Path::new(&var(
+                "SELTRANSLATE_SPEECH",
+            )))
             .unwrap();
-            let mut pcm: Vec<f32> = Vec::new();
-            while pcm.len() < 20 * 16_000
-                && decoder.next_frames(|f| pcm.extend_from_slice(f)).unwrap()
-            {}
             pcm.truncate(20 * 16_000);
             pcm
         };

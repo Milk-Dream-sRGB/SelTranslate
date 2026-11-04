@@ -5,16 +5,7 @@ use clap::Parser;
 use handy_app_lib::CliArgs;
 
 fn main() {
-    // SelTranslate never updates itself: an official Handy build would replace
-    // this fork. The flag also hides the tray item and locks the settings toggle.
-    std::env::set_var("HANDY_DISABLE_UPDATER", "1");
-
-    #[cfg(target_os = "linux")]
-    {
-        // DMABUF renderer causes crashes on various GPU/display server configurations
-        // See: https://github.com/tauri-apps/tauri/issues/9394
-        std::env::set_var("WEBKIT_DISABLE_DMABUF_RENDERER", "1");
-    }
+    handy_app_lib::webkit_renderer::apply();
 
     #[cfg(target_os = "windows")]
     {

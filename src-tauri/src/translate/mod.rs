@@ -8,6 +8,7 @@
 pub mod action;
 mod cache;
 pub mod double_tap;
+pub mod fallback;
 pub mod file;
 pub mod fullscreen;
 pub mod llama_server;
@@ -20,9 +21,14 @@ pub mod selection;
 pub mod settings;
 pub mod setup;
 
+use std::path::Path;
+use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
 
+use log::warn;
 use tauri::{AppHandle, Manager};
+
+use crate::notices::{self, Notice, NoticeCode, NoticeSource};
 
 use llama_server::{LlamaServer, ServerStatus};
 use settings::{SelTranslateSettings, Slot};
@@ -45,10 +51,71 @@ fn server_config(
 /// model file is Quality.
 pub fn ensure_server(app: &AppHandle, slot: Slot) -> Result<(u16, String), String> {
     let server = app.state::<Arc<LlamaServer>>();
-    let settings = settings::load(app);
+    let mut settings = settings::load(app);
     server.set_idle_unload_ms(settings.idle_unload_ms());
     server.spawn_idle_watcher();
-    server.ensure_running(&server_config(app, &settings, settings.resolve_slot(slot))?)
+    loop {
+        let mut config = server_config(app, &settings, settings.resolve_slot(slot))?;
+        config.cpu_only = CPU_ONLY.load(Ordering::Acquire);
+        let error = match server.ensure_running(&config) {
+            Ok(endpoint) => return Ok(endpoint),
+            Err(error) => error,
+        };
+        let kind = setup::engine_kind(&config.exe_path);
+        if !fallback::gpu_start_crash(kind, &error) {
+            return Err(error);
+        }
+        let vulkan = setup_vulkan_exe();
+        let vulkan_installed = vulkan.as_deref().is_some_and(Path::is_file);
+        match fallback::next_step(kind, vulkan_installed, config.cpu_only) {
+            Some(fallback::Step::UseVulkan) => {
+                let vulkan = vulkan.expect("checked above");
+                warn!(
+                    "llama-server: the {kind:?} engine crashed on start, switching to Vulkan ({})",
+                    vulkan.display()
+                );
+                settings.llama_server_path = vulkan.display().to_string();
+                settings::save(app, &settings)?;
+                raise_fallback(app, NoticeCode::TranslateSwitchedToVulkan, &error);
+            }
+            Some(fallback::Step::UseCpu) => {
+                warn!("llama-server: the {kind:?} engine crashed on start, using the processor");
+                CPU_ONLY.store(true, Ordering::Release);
+                raise_fallback(app, NoticeCode::TranslateOnCpu, &error);
+            }
+            None => return Err(error),
+        }
+    }
+}
+
+/// The video card engine crashed on start in this run: the server starts
+/// with `--device none` until the app restarts or the engine is changed.
+static CPU_ONLY: AtomicBool = AtomicBool::new(false);
+
+/// A new engine (settings or setup) deserves another try on the video card.
+pub(crate) fn reset_cpu_fallback() {
+    CPU_ONLY.store(false, Ordering::Release);
+}
+
+/// The Vulkan engine the setup installs, wherever it may be installed yet.
+fn setup_vulkan_exe() -> Option<std::path::PathBuf> {
+    if cfg!(target_os = "macos") {
+        return None;
+    }
+    let (app_data, _) = settings::setup_roots()?;
+    Some(setup::catalog::engine_exe(
+        &app_data,
+        setup::catalog::EngineFlavor::Vulkan,
+    ))
+}
+
+/// The first line of the crash goes along; the log tail is in the app log.
+fn raise_fallback(app: &AppHandle, code: NoticeCode, error: &str) {
+    let detail = error.lines().next().map(str::to_string);
+    notices::raise(
+        app,
+        Notice::new(code, NoticeSource::Translate).with_detail(detail),
+    );
 }
 
 /// Whether using `slot` now has to start (or restart) the server, for the
@@ -145,6 +212,9 @@ pub async fn set_translate_settings(
         || old.fast_model_path != settings.fast_model_path
         || old.gpu_layers != settings.gpu_layers
         || old.ctx_size != settings.ctx_size;
+    if old.llama_server_path != settings.llama_server_path {
+        reset_cpu_fallback();
+    }
     if server_changed {
         tauri::async_runtime::spawn_blocking(move || server.stop())
             .await
