@@ -96,7 +96,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          files=$(find dist -type f \( -name '*.exe' -o -name '*.dmg' -o -name '*.app.tar.gz' -o -name 'latest.json' \))
+          files=$(find dist -type f \( -name '*.exe' -o -name '*.msi' -o -name '*.dmg' -o -name '*.app.tar.gz' -o -name 'latest.json' \))
           gh release create "${{ steps.version.outputs.tag }}" $files \
             --repo "${{ github.repository }}" \
             --target "${{ github.sha }}" \
