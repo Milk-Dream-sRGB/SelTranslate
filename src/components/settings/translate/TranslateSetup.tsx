@@ -115,8 +115,8 @@ const Row: React.FC<RowProps> = ({
     />
     <span className="min-w-0 flex-1">
       <span className="block text-sm font-medium">{title}</span>
-      <span className="block text-xs text-mid-gray">{meta}</span>
-      {note && <span className="block text-xs text-mid-gray">{note}</span>}
+      <span className="block text-xs text-ink-3">{meta}</span>
+      {note && <span className="block text-xs text-ink-3">{note}</span>}
     </span>
   </label>
 );
@@ -314,7 +314,7 @@ export const TranslateSetup: React.FC<TranslateSetupProps> = ({ advanced }) => {
       parts.push(free(plan.engine_volume, plan.free_engine_bytes));
     }
     return (
-      <p className={`px-4 py-2 text-sm ${space.short ? "text-red-400" : ""}`}>
+      <p className={`px-4 py-2 text-sm ${space.short ? "text-error" : ""}`}>
         {parts.filter(Boolean).join(" · ")}
         {space.short && ` — ${t("translateSetup.notEnoughSpace")}`}
       </p>
@@ -401,21 +401,23 @@ export const TranslateSetup: React.FC<TranslateSetupProps> = ({ advanced }) => {
             </label>
           ))}
         </div>
-        {!plan.nvidia && (
-          <p className="text-xs text-mid-gray">
-            {t("translateSetup.engine.nvidiaOnly")}
-          </p>
-        )}
+        <p className="text-xs text-ink-3">
+          {t(
+            plan.nvidia
+              ? "translateSetup.engine.cudaHint"
+              : "translateSetup.engine.nvidiaOnly",
+          )}
+        </p>
         {busy && (
-          <p className="text-xs text-mid-gray">
+          <p className="text-xs text-ink-3">
             {t("translateSetup.engine.busy")}
           </p>
         )}
         {engineMessage && (
-          <p className="text-sm text-red-400 break-words">{engineMessage}</p>
+          <p className="text-sm text-error break-words">{engineMessage}</p>
         )}
         {pendingEngine && (
-          <div className="rounded-lg border border-mid-gray/20">
+          <div className="rounded-lg border border-line">
             <p className="px-4 py-2 text-sm">
               {t("translateSetup.engine.downloadQuestion", {
                 name: engineShort(pendingEngine),
@@ -423,7 +425,7 @@ export const TranslateSetup: React.FC<TranslateSetupProps> = ({ advanced }) => {
               })}
             </p>
             {plan.engine.own_files && (
-              <p className="px-4 pb-2 text-xs text-mid-gray">
+              <p className="px-4 pb-2 text-xs text-ink-3">
                 {t("translateSetup.engine.ownReplace")}
               </p>
             )}
@@ -511,7 +513,7 @@ export const TranslateSetup: React.FC<TranslateSetupProps> = ({ advanced }) => {
     <div className="px-4 py-2">
       <button
         type="button"
-        className="text-sm underline cursor-pointer text-mid-gray hover:text-text"
+        className="text-sm underline cursor-pointer text-ink-3 hover:text-text"
         onClick={() => setShowAdvanced((v) => !v)}
         aria-expanded={showAdvanced}
       >
@@ -558,7 +560,7 @@ export const TranslateSetup: React.FC<TranslateSetupProps> = ({ advanced }) => {
       <SettingsGroup title={t("translateSetup.title")}>
         <div className="px-4 py-3 space-y-2">
           <p className="text-sm">{phase}</p>
-          <div className="h-2 w-full rounded bg-mid-gray/20 overflow-hidden">
+          <div className="h-2 w-full rounded bg-line overflow-hidden">
             <div
               className="h-full bg-logo-primary transition-[width] duration-300"
               style={{ width: `${percent}%` }}
@@ -568,7 +570,7 @@ export const TranslateSetup: React.FC<TranslateSetupProps> = ({ advanced }) => {
             <Button variant="danger" onClick={() => void cancel()}>
               {t("translateSetup.cancel")}
             </Button>
-            <span className="text-sm text-mid-gray">{line}</span>
+            <span className="text-sm text-ink-3">{line}</span>
           </div>
         </div>
       </SettingsGroup>
@@ -586,7 +588,7 @@ export const TranslateSetup: React.FC<TranslateSetupProps> = ({ advanced }) => {
         {errorText(view.kind, view.item, view.message)}
       </Alert>
       {view.kind !== "disk_full" && view.kind !== "network" && (
-        <p className="text-xs text-mid-gray break-words">{view.message}</p>
+        <p className="text-xs text-ink-3 break-words">{view.message}</p>
       )}
       {termsBox(resumeQueue())}
       <div className="flex gap-2">
@@ -612,7 +614,7 @@ export const TranslateSetup: React.FC<TranslateSetupProps> = ({ advanced }) => {
   );
 
   const startErrorLine = startError && (
-    <p className="px-4 pb-2 text-sm text-red-400 break-words">{startError}</p>
+    <p className="px-4 pb-2 text-sm text-error break-words">{startError}</p>
   );
 
   // ----- Paused -----
@@ -633,7 +635,7 @@ export const TranslateSetup: React.FC<TranslateSetupProps> = ({ advanced }) => {
             </p>
             {termsBox(queue)}
             {space.short && (
-              <p className="text-sm text-red-400">
+              <p className="text-sm text-error">
                 {t("translateSetup.notEnoughSpace")}
               </p>
             )}
@@ -703,7 +705,7 @@ export const TranslateSetup: React.FC<TranslateSetupProps> = ({ advanced }) => {
         </Alert>
       )}
       {skipped.length > 0 && notices.length === 0 && (
-        <p className="text-xs text-mid-gray">
+        <p className="text-xs text-ink-3">
           {t("translateSetup.notices.skipped")}
         </p>
       )}
@@ -721,7 +723,7 @@ export const TranslateSetup: React.FC<TranslateSetupProps> = ({ advanced }) => {
         </div>
       )}
       {adding && quality && (
-        <div className="rounded-lg border border-mid-gray/20">
+        <div className="rounded-lg border border-line">
           <Row
             title={t("translateSetup.items.model-quality.name")}
             meta={meta(quality, t("translateSetup.items.model-quality.what"))}
@@ -780,7 +782,7 @@ export const TranslateSetup: React.FC<TranslateSetupProps> = ({ advanced }) => {
     <>
       <div className="px-4 py-3 space-y-1">
         <p className="text-sm">{t("translateSetup.description")}</p>
-        <p className="text-sm text-mid-gray">{gpuLine}</p>
+        <p className="text-sm text-ink-3">{gpuLine}</p>
       </div>
       {hasEngine ? (
         <Row
@@ -814,7 +816,7 @@ export const TranslateSetup: React.FC<TranslateSetupProps> = ({ advanced }) => {
                 )}
                 <span>
                   {engineName(flavor)}
-                  <span className="block text-xs text-mid-gray">
+                  <span className="block text-xs text-ink-3">
                     {[
                       t(
                         flavor === "metal"
@@ -832,9 +834,13 @@ export const TranslateSetup: React.FC<TranslateSetupProps> = ({ advanced }) => {
               </label>
             );
           })}
-          {hasEngineChoice && !plan.nvidia && (
-            <p className="text-xs text-mid-gray">
-              {t("translateSetup.engine.nvidiaOnly")}
+          {hasEngineChoice && (
+            <p className="text-xs text-ink-3">
+              {t(
+                plan.nvidia
+                  ? "translateSetup.engine.cudaHint"
+                  : "translateSetup.engine.nvidiaOnly",
+              )}
             </p>
           )}
         </div>
@@ -878,7 +884,7 @@ export const TranslateSetup: React.FC<TranslateSetupProps> = ({ advanced }) => {
         >
           {t("translateSetup.download")}
         </Button>
-        <p className="text-xs text-mid-gray">{t("translateSetup.credits")}</p>
+        <p className="text-xs text-ink-3">{t("translateSetup.credits")}</p>
       </div>
     </>
   );
@@ -892,13 +898,13 @@ export const TranslateSetup: React.FC<TranslateSetupProps> = ({ advanced }) => {
       {startErrorLine}
       {advancedToggle}
       {showAdvanced && (
-        <div className="divide-y divide-mid-gray/20">
+        <div className="divide-y divide-line">
           {!plan.ready && hasEngine && engineSwitch()}
           {advanced}
           {(plan.engine.unused.length > 0 || plan.models_deletable_bytes > 0) &&
             deletions}
           {engineMessage && plan.ready && (
-            <p className="px-4 py-2 text-sm text-red-400 break-words">
+            <p className="px-4 py-2 text-sm text-error break-words">
               {engineMessage}
             </p>
           )}

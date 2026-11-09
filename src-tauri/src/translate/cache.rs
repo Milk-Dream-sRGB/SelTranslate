@@ -91,8 +91,14 @@ mod tests {
         assert_ne!(base, key("Привет", "fast.gguf", "Standard", "ru", "de"));
         assert_ne!(base, key("Привет", "fast.gguf", "Standard", "bg", "en"));
         // Where the model ends and the style begins cannot be faked.
-        assert_ne!(key("a", "ms", "x", "ru", "en"), key("a", "m", "sx", "ru", "en"));
-        assert_ne!(key("1:b", "a", "", "ru", "en"), key("", "a", "1:b", "ru", "en"));
+        assert_ne!(
+            key("a", "ms", "x", "ru", "en"),
+            key("a", "m", "sx", "ru", "en")
+        );
+        assert_ne!(
+            key("1:b", "a", "", "ru", "en"),
+            key("", "a", "1:b", "ru", "en")
+        );
     }
 
     #[test]

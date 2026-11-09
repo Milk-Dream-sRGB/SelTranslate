@@ -12,7 +12,12 @@ export type TranslateFileStatus =
   | "cancelled"
   | "error";
 
-interface ProgressPayload {
+/** Set when the job is History's Translate on an entry (not this tab's). */
+interface Tagged {
+  entry_id: number | null;
+}
+
+interface ProgressPayload extends Tagged {
   phase: "starting_model" | "translating";
   done: number;
   total: number;
@@ -22,7 +27,7 @@ interface ProgressPayload {
   eta_secs: number | null;
 }
 
-export interface TranslateFileResult {
+export interface TranslateFileResult extends Tagged {
   /** Where the result was saved; null when `save_error` says why not. */
   output_path: string | null;
   save_error: string | null;
@@ -69,6 +74,7 @@ export const useTranslateFileStore = create<TranslateFileState>()(
       if (listening) return;
       listening = true;
       listen<ProgressPayload>("translate-file-progress", ({ payload }) => {
+        if (payload.entry_id !== null) return;
         set({
           status: payload.phase,
           done: payload.done,
@@ -77,12 +83,18 @@ export const useTranslateFileStore = create<TranslateFileState>()(
         });
       });
       listen<TranslateFileResult>("translate-file-done", ({ payload }) => {
+        if (payload.entry_id !== null) return;
         set({ status: "done", result: payload, etaSecs: null });
       });
-      listen<{ message: string }>("translate-file-error", ({ payload }) => {
-        set({ status: "error", error: payload.message, etaSecs: null });
-      });
-      listen("translate-file-cancelled", () => {
+      listen<Tagged & { message: string }>(
+        "translate-file-error",
+        ({ payload }) => {
+          if (payload.entry_id !== null) return;
+          set({ status: "error", error: payload.message, etaSecs: null });
+        },
+      );
+      listen<Tagged>("translate-file-cancelled", ({ payload }) => {
+        if (payload.entry_id !== null) return;
         set({ status: "cancelled", etaSecs: null });
       });
     },

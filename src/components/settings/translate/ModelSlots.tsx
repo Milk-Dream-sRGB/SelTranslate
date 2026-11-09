@@ -76,7 +76,7 @@ const SlotModel: React.FC<SlotProps> = ({
   const path =
     (slot === "fast" ? settings.fast_model_path : settings.model_path) ?? "";
   const key = promptKey(path);
-  const choice: PromptChoice = settings.prompt_styles?.[key] ?? {};
+  const choice: Partial<PromptChoice> = settings.prompt_styles?.[key] ?? {};
   const style: PromptStyle = choice.style ?? "standard";
   const [draft, setDraft] = useState(choice.custom ?? "");
   const [error, setError] = useState<string | null>(null);
@@ -193,7 +193,7 @@ const SlotModel: React.FC<SlotProps> = ({
             }
           />
           {known && (
-            <span className="text-xs text-mid-gray">
+            <span className="text-xs text-ink-3">
               {t(sizeKey, {
                 size: gb(known.size_bytes),
                 vram: gb(known.size_bytes + VRAM_OVERHEAD),
@@ -202,7 +202,7 @@ const SlotModel: React.FC<SlotProps> = ({
           )}
           {path && (
             <span
-              className="text-xs text-mid-gray font-mono truncate max-w-[340px]"
+              className="text-xs text-ink-3 font-mono truncate max-w-[340px]"
               title={path}
             >
               {path}
@@ -237,10 +237,10 @@ const SlotModel: React.FC<SlotProps> = ({
                   spellCheck={false}
                   onChange={(e) => setDraft(e.target.value)}
                 />
-                <p className="text-xs text-mid-gray">
+                <p className="text-xs text-ink-3">
                   {t("translateSettings.promptStyle.placeholders")}
                 </p>
-                {error && <p className="text-sm text-red-400">{error}</p>}
+                {error && <p className="text-sm text-error">{error}</p>}
                 <div className="flex gap-2 justify-end">
                   <Button variant="secondary" onClick={() => void reset()}>
                     {t("translateSettings.promptStyle.reset")}

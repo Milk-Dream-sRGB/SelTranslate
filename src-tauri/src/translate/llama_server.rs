@@ -34,6 +34,9 @@ pub struct ServerConfig {
     pub ctx_size: u32,
     pub log_path: PathBuf,
     pub chat_format: ChatFormat,
+    /// No video card at all (`--device none`): the fallback after the GPU
+    /// engine crashed on start (see `fallback`).
+    pub cpu_only: bool,
 }
 
 /// How the model's chat is formatted (I). TranslateGemma needs the plain
@@ -92,7 +95,11 @@ pub fn build_args(config: &ServerConfig, port: u16, api_key: &str) -> Vec<String
             "--port",
             &port.to_string(),
             "-ngl",
-            &ngl_arg(config.gpu_layers),
+            &if config.cpu_only {
+                "0".to_string()
+            } else {
+                ngl_arg(config.gpu_layers)
+            },
             "-c",
             &config.ctx_size.to_string(),
             "-np",
@@ -103,6 +110,10 @@ pub fn build_args(config: &ServerConfig, port: u16, api_key: &str) -> Vec<String
         ]
         .map(String::from),
     );
+    if config.cpu_only {
+        // Not even device init: a broken CUDA or Vulkan crashes right there.
+        args.extend(["--device", "none"].map(String::from));
+    }
     args.extend(template.iter().map(|a| a.to_string()));
     args.extend(["--temp", "0", "-n", "1024", "--api-key", api_key].map(String::from));
     args
@@ -874,6 +885,7 @@ mod tests {
             log_path: log,
             // The B1 tests use any file name; the B1 command line is TranslateGemma's.
             chat_format: ChatFormat::TranslateGemma,
+            cpu_only: false,
         }
     }
 
@@ -973,6 +985,19 @@ mod tests {
             "k",
         );
         assert_eq!(cpu[cpu.iter().position(|a| a == "-ngl").unwrap() + 1], "0");
+        assert!(!cpu.contains(&"--device".to_string()));
+    }
+
+    #[test]
+    fn cpu_only_hides_every_video_card() {
+        let cfg = ServerConfig {
+            cpu_only: true,
+            ..config(r"C:\llama\llama-server.exe", r"C:\m.gguf", "x.log".into())
+        };
+        let args = build_args(&cfg, 1, "k");
+        let after = |flag: &str| &args[args.iter().position(|a| a == flag).unwrap() + 1];
+        assert_eq!(after("-ngl"), "0");
+        assert_eq!(after("--device"), "none");
     }
 
     #[test]
@@ -1449,6 +1474,7 @@ mod tests {
             allow_base_url_edit: false,
             models_endpoint: None,
             supports_structured_output: false,
+            api_format: crate::settings::PostProcessApiFormat::OpenAi,
         };
         // DESIGN B.3, ru → en.
         let prompt = "You are a professional Russian (ru) to English (en) translator. Your goal is \

@@ -1636,7 +1636,11 @@ Please translate the following Russian text into English:\n\n\nПривет, м�
     fn auto_target_keeps_the_old_rule() {
         let d = resolve_direction("Привет, мир", None, None);
         assert_eq!((d.src, d.tgt), ("ru", "en"));
-        let d = resolve_direction("Hello, how are you doing today? I would like to translate this text.", None, None);
+        let d = resolve_direction(
+            "Hello, how are you doing today? I would like to translate this text.",
+            None,
+            None,
+        );
         assert_eq!((d.src, d.tgt), ("en", "ru"));
         let d = resolve_direction("anything", Some("de"), None);
         assert_eq!((d.src, d.tgt), ("de", "ru"));
@@ -1646,7 +1650,11 @@ Please translate the following Russian text into English:\n\n\nПривет, м�
     fn explicit_target_replaces_only_the_target() {
         let d = resolve_direction("Привет, мир", None, Some("de"));
         assert_eq!((d.src, d.tgt), ("ru", "de"));
-        let d = resolve_direction("Hello, how are you doing today? I would like to translate this text.", None, Some("ja"));
+        let d = resolve_direction(
+            "Hello, how are you doing today? I would like to translate this text.",
+            None,
+            Some("ja"),
+        );
         assert_eq!((d.src, d.tgt), ("en", "ja"));
         let d = resolve_direction("anything", Some("fr"), Some("es"));
         assert_eq!((d.src, d.tgt), ("fr", "es"));

@@ -1,13 +1,19 @@
 name: "SelTranslate Build"
 
 # Unsigned Windows (NSIS/MSI) and macOS (Apple silicon, ad-hoc) packages of the fork.
-# Run it by hand (Actions, SelTranslate Build, Run workflow) or push a tag
-# `seltranslate-*`: the tag also creates a draft release with the installers.
+# Run it by hand: Actions, SelTranslate Build, Run workflow. With "Create a draft
+# release" ticked it also makes a draft release `seltranslate-<version>` with the
+# installers and `latest.json` for the in-app updater, which reads it from the
+# latest *published* release (src-tauri/tauri.conf.json). Publishing the draft
+# creates the tag. Update files are signed with the repository secrets
+# TAURI_SIGNING_PRIVATE_KEY and TAURI_SIGNING_PRIVATE_KEY_PASSWORD.
 on:
   workflow_dispatch:
-  push:
-    tags:
-      - "seltranslate-*"
+    inputs:
+      release:
+        description: "Create a draft release"
+        type: boolean
+        default: false
 
 jobs:
   build:
@@ -18,12 +24,13 @@ jobs:
       matrix:
         include:
           - platform: "windows-latest"
-            args: ""
+            args: "--config src-tauri/tauri.updater.conf.json"
             target: "x86_64-pc-windows-msvc"
           - platform: "macos-26"
-            args: "--target aarch64-apple-darwin"
+            args: "--target aarch64-apple-darwin --config src-tauri/tauri.updater.conf.json"
             target: "aarch64-apple-darwin"
     uses: ./.github/workflows/build.yml
+    secrets: inherit
     with:
       platform: ${{ matrix.platform }}
       target: ${{ matrix.target }}
@@ -34,7 +41,7 @@ jobs:
       no-cache: true
 
   draft-release:
-    if: startsWith(github.ref, 'refs/tags/seltranslate-')
+    if: inputs.release
     needs: build
     runs-on: ubuntu-latest
     permissions:
@@ -46,14 +53,53 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: gh run download "${{ github.run_id }}" --repo "${{ github.repository }}" --dir dist
 
+      - name: Read the version
+        id: version
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          version=$(gh api "repos/${{ github.repository }}/contents/src-tauri/tauri.conf.json?ref=${{ github.sha }}" \
+            --jq .content | base64 -d | jq -r .version)
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "tag=seltranslate-$version" >> "$GITHUB_OUTPUT"
+
+      - name: Write latest.json for the updater
+        env:
+          TAG: ${{ steps.version.outputs.tag }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          version="${TAG#seltranslate-}"
+          base="https://github.com/${REPO}/releases/download/${TAG}"
+          win=$(find dist -type f -name '*-setup.exe' | head -n1)
+          mac=$(find dist -type f -name '*.app.tar.gz' | head -n1)
+          for f in "$win" "$mac"; do
+            [ -n "$f" ] && [ -f "$f.sig" ] || { echo "Missing an update file or its signature: '$f'" >&2; exit 1; }
+          done
+          jq -n \
+            --arg version "$version" \
+            --arg date "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+            --arg notes "SelTranslate ${version}" \
+            --arg win_url "${base}/$(basename "$win")" \
+            --rawfile win_sig "$win.sig" \
+            --arg mac_url "${base}/$(basename "$mac")" \
+            --rawfile mac_sig "$mac.sig" \
+            '{version: $version, notes: $notes, pub_date: $date, platforms: {
+              "windows-x86_64": {signature: $win_sig, url: $win_url},
+              "darwin-aarch64": {signature: $mac_sig, url: $mac_url}}}' \
+            > dist/latest.json
+          cat dist/latest.json
+
       - name: Create a draft release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          files=$(find dist -type f \( -name '*.exe' -o -name '*.dmg' \))
-          gh release create "${{ github.ref_name }}" $files \
+          files=$(find dist -type f \( -name '*.exe' -o -name '*.msi' -o -name '*.dmg' -o -name '*.app.tar.gz' -o -name 'latest.json' \))
+          gh release create "${{ steps.version.outputs.tag }}" $files \
             --repo "${{ github.repository }}" \
+            --target "${{ github.sha }}" \
             --draft \
-            --title "SelTranslate ${{ github.ref_name }}" \
+            --title "SelTranslate ${{ steps.version.outputs.version }}" \
             --notes "Unsigned builds. Windows SmartScreen and macOS Gatekeeper will warn on the first launch; see the README."

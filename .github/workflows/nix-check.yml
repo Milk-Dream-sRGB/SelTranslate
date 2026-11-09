@@ -35,6 +35,8 @@ concurrency:
 
 jobs:
   nix-build:
+    # SelTranslate: Handy's own check; the fork runs seltranslate-test.yml.
+    if: github.repository == 'cjpais/Handy'
     runs-on: ubuntu-24.04
     continue-on-error: false
     steps:

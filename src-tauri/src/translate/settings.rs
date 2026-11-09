@@ -359,6 +359,7 @@ impl SelTranslateSettings {
             gpu_layers: self.gpu_layers,
             ctx_size: self.ctx_size,
             log_path,
+            cpu_only: false,
         }
     }
 
